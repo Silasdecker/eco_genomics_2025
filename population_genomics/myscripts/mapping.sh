@@ -57,10 +57,10 @@ MYPOP="2022"
 
 # Define the input directory with your *cleaned* fastq files
 
-# INPUT="/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/cleanreads"
+INPUT="/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/cleanreads"
 # Define your output directory where the mapping files will be saved
 
-# OUT="/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/bams"
+OUT="/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/bams"
 
 # cd into the directory where the cleaned and trimmed reads live:
 

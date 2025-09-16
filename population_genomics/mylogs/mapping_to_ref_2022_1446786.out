@@ -1,0 +1,70 @@
+@ Aligning 2022_36_H...
+Looking to launch executable "/gpfs1/sw/rh9/pkgs/bwa-mem2/2.2.1/bwa-mem2.avx2", simd = .avx2
+Launching executable "/gpfs1/sw/rh9/pkgs/bwa-mem2/2.2.1/bwa-mem2.avx2"
+-----------------------------
+Executing in AVX2 mode!!
+-----------------------------
+* SA compression enabled with xfactor: 8
+* Ref file: /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa
+* Entering FMI_search
+* Index file found. Loading index from /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa.bwt.2bit.64
+* Reference seq len for bi-index = 5855199825
+* sentinel-index: 2317116625
+* Count:
+0,	1
+1,	1783324060
+2,	2927599913
+3,	4071875766
+4,	5855199825
+
+* Reading other elements of the index from files /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa
+* Index prefix: /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa
+* Read 0 ALT contigs
+* Done reading Index!!
+* Reading reference genome..
+* Binary seq file = /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa.0123
+* Reference genome size: 5855199824 bp
+* Done reading reference genome !!
+
+------------------------------------------
+1. Memory pre-allocation for Chaining: 1393.3971 MB
+2. Memory pre-allocation for BSW: 2396.1702 MB
+3. Memory pre-allocation for BWT: 773.1418 MB
+------------------------------------------
+* Threads used (compute): 10
+* No. of pipeline threads: 2
+
+[0000] read_chunk: 100000000, work_chunk_size: 100000134, nseq: 730788
+	[0000][ M::kt_pipeline] read 730788 sequences (100000134 bp)...
+[0000] Reallocating initial memory allocations!!
+[0000] Calling mem_process_seqs.., task: 0
+[0000] 1. Calling kt_for - worker_bwt
+[0000] read_chunk: 100000000, work_chunk_size: 100000142, nseq: 730778
+	[0000][ M::kt_pipeline] read 730778 sequences (100000142 bp)...
+[0000] 2. Calling kt_for - worker_aln
+[0000] Inferring insert size distribution of PE reads from data, l_pac: 2927599912, n: 730788
+[0000][PE] # candidate unique pairs for (FF, FR, RF, RR): (25, 154633, 150, 13)
+[0000][PE] analyzing insert size distribution for orientation FF...
+[0000][PE] (25, 50, 75) percentile: (285, 1092, 4961)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 14313)
+[0000][PE] mean and std.dev: (2356.44, 2561.00)
+[0000][PE] low and high boundaries for proper pairs: (1, 18989)
+[0000][PE] analyzing insert size distribution for orientation FR...
+[0000][PE] (25, 50, 75) percentile: (315, 389, 483)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 819)
+[0000][PE] mean and std.dev: (402.73, 126.26)
+[0000][PE] low and high boundaries for proper pairs: (1, 987)
+[0000][PE] analyzing insert size distribution for orientation RF...
+[0000][PE] (25, 50, 75) percentile: (293, 2676, 5649)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 16361)
+[0000][PE] mean and std.dev: (3326.55, 3178.18)
+[0000][PE] low and high boundaries for proper pairs: (1, 21717)
+[0000][PE] analyzing insert size distribution for orientation RR...
+[0000][PE] (25, 50, 75) percentile: (379, 1724, 5847)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 16783)
+[0000][PE] mean and std.dev: (3081.62, 3114.60)
+[0000][PE] low and high boundaries for proper pairs: (1, 22251)
+[0000][PE] skip orientation FF
+[0000][PE] skip orientation RF
+[0000][PE] skip orientation RR
+[0000] 3. Calling kt_for - worker_sam

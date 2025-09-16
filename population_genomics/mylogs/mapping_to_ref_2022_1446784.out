@@ -1,0 +1,8 @@
+@ Aligning 2022*R1_clean.fastq.gz...
+Looking to launch executable "/gpfs1/sw/rh9/pkgs/bwa-mem2/2.2.1/bwa-mem2.avx2", simd = .avx2
+Launching executable "/gpfs1/sw/rh9/pkgs/bwa-mem2/2.2.1/bwa-mem2.avx2"
+-----------------------------
+Executing in AVX2 mode!!
+-----------------------------
+* SA compression enabled with xfactor: 8
+Error: can't open /2022*R1_clean.fastq.gz.sam input file
