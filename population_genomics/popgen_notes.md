@@ -39,3 +39,13 @@ the myscripts folder This was used to trim adapters off red spruce fastq sequenc
 * We will go to the reference genome via: 
 `cd /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome`
 
+### 9/18/2025  Review Bamstats and set up nucleotide diversity estimation using ANGSD
+
+* Load in 2022.stats.txt into r to view
+
+* Wrote short script called bam_stats_review.r located in myscripts to evaluate the mapping success 
+* saw roughly 66% reads mapped in proper pairs 
+* obtained depth of coverage between 2-3x , suggest we need to use a probabilistic framework for analyzing the genotype data
+
+* 
+
