@@ -1,3 +1,5 @@
+
+
 # Population Genomics Notebook
 
 ## Fall 2025 Ecological Genomics
@@ -48,4 +50,12 @@ the myscripts folder This was used to trim adapters off red spruce fastq sequenc
 * obtained depth of coverage between 2-3x , suggest we need to use a probabilistic framework for analyzing the genotype data
 
 * 
+
+9/25/25
+
+We wrote a bash script to compare Fst between our red spruce and Wisconsin black spruce, called ANGSD_Fst.sh and the file produced results to:
+`/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/Fst`
+
+We then wrote a bash script to run PCA and admixture for ALL samples called PCAngsd_RSBS.sh
+
 

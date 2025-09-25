@@ -1,0 +1,7 @@
+mkdir: cannot create directory ‘/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics’: File exists
+mkdir: cannot create directory ‘/myresults/ANGSD/Fst’: No such file or directory
+/var/spool/slurm/d/job1590115/slurm_script: line 64: ${REPO}/myresults/ANGSD/Fst/${MYRSPOP}_${MYBSPOP}_2D.sfs: ambiguous redirect
+realSFS: safreader.cpp:93: persaf* persaf_init(char*, int) [with T = float]: Assertion `fread(buf,1,8,fp)==8' failed.
+/var/spool/slurm/d/job1590115/slurm_script: line 76: 3927804 Aborted                 (core dumped) realSFS fst index ${REPO}/mydata/ANGSD/${MYRSPOP}_${SUFFIX}.saf.idx ${BLKSPR}/${MYBSPOP}_${SUFFIX}.saf.idx -sfs ${REPO}/myresults/ANGSD/Fst/${MYRSPOP}_${MYBSPOP}_2D.sfs -fstout ${REPO}/mydata/ANGSD/${MYRSPOP}_${MYBSPOP} -whichFst 1 -P 10
+/var/spool/slurm/d/job1590115/slurm_script: line 79: ${REPO}/myresults/ANGSD/Fst/${MYRSPOP}_${MYBSPOP}_Fst.txt: ambiguous redirect
+/var/spool/slurm/d/job1590115/slurm_script: line 85: ${REPO}/myresults/ANGSD/Fst/${MYRSPOP}_${MYBSPOP}_Fst_50kbWindows.txt: ambiguous redirect
