@@ -439,14 +439,68 @@ a probabilistic framework for analyzing the genotype data</p></li>
 (ANGSD) to perform genotype likelihood (GL) analysis</p></li>
 <li><p>GL is the probability of observing the sequencing data given the
 genotype of the individual at that site</p></li>
+<li><p>To do so we made a bash script called ANGSD.sh which estimated
+genotype liklihoods (GLs) and allele frequencies</p></li>
+<li><p>ANGSD.sh also filtered for base and mapping quality as well as
+sequencing depth</p></li>
+<li><p>In addition to ANGSD.sh we made a bash script to estimate
+nucleotide diversity (theta) called ANGSD_doTheta.sh</p></li>
+<li><p>To run the two ANGSD scripts in series, we made a wrapper called
+diversity_wrapper.sh and submitted it to SLURM with outputs in diversity
+(ANGSD_doTheta.sh) and ANGSD (ANGSD.sh):
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity</code>
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics/mydata/ANGSD</code></p></li>
+<li><p>Stats derived from these scripts include: Watterson’s Theta (tW),
+Tajima’s D (Tajima), and Theta pi (tP)</p></li>
+<li><p>Additional information produced includes ‘Chr’ (the
+chromosome/contig a read maps to), WinCenter (center of window/contig in
+bp), and nSites (number of bp being analyzed)</p></li>
 </ul>
-<p>9/25/25</p>
-<p>We wrote a bash script to compare Fst between our red spruce and
+</div>
+<div id="section" class="section level3">
+<h3>9/23/25</h3>
+<ul>
+<li><p>We made an Rmarkdown file called Nucleotide_Diversity.Rmd that
+lives in:
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics/mydocs</code></p></li>
+<li><p>To compare our individual samples to the entire class samples we
+filled in a good sheet:</p></li>
+<li><p><a href="https://docs.google.com/spreadsheets/d/1SLwhW3OgQiX2z1rxH-ske236NYxjDXCvUu0l8XFeS_w/edit?usp=sharing" class="uri">https://docs.google.com/spreadsheets/d/1SLwhW3OgQiX2z1rxH-ske236NYxjDXCvUu0l8XFeS_w/edit?usp=sharing</a></p></li>
+<li><p>This sheet will be used to compare diversity across
+samples</p></li>
+<li><p>The Nucleotide_Diversity.Rmd file began by reading in our theta
+values</p></li>
+<li><p>We then scaled the Watterson’s theta values by nSites and used
+the library tidyverse to filter out reads where nSites&lt;100</p></li>
+<li><p>We summarized out new filtered dataframe (theta2) to produce
+statistics for aforementioend numbers produced in the
+diversity_wrapper.sh file</p></li>
+<li><p>Using the library ggplot2 we produced a histogram of how many
+sites are in each window</p></li>
+<li><p>We also used ggplot to plot nucleotide diversity in our
+population for 50 kB windows</p></li>
+<li><p>To interrogate the data for evidence of selective sweeps (large
+negative Tajima and low nucleotide diversity):</p></li>
+<li><p>theta2[which(theta2<span class="math inline">\(Tajima &lt; -1.5
+&amp; theta2\)</span>tPsite&lt;0.001),]</p></li>
+<li><p>We solved for the effective population size using the mutation
+rate, ploidy, regeneration time, and theta</p></li>
+<li><p>We then pulled out extreme values for Tajima’s D using max and
+min functions</p></li>
+</ul>
+</div>
+<div id="section-1" class="section level3">
+<h3>9/25/25</h3>
+<ul>
+<li><p>We wrote a bash script to compare Fst between our red spruce and
 Wisconsin black spruce, called ANGSD_Fst.sh and the file produced
 results to:
-<code>/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/Fst</code></p>
-<p>We then wrote a bash script to run PCA and admixture for ALL samples
-called PCAngsd_RSBS.sh</p>
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/Fst</code></p></li>
+<li><p>We then wrote a bash script to run PCA and admixture for ALL
+samples called PCAngsd_RSBS.sh</p></li>
+<li><p>My script is not running right now, I am in the process of
+debugging and will update my notebook accordingly</p></li>
+</ul>
 </div>
 </div>
 </div>
