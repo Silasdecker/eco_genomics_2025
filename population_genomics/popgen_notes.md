@@ -27,19 +27,31 @@ the myscripts folder This was used to trim adapters off red spruce fastq sequenc
 ### 9/16/2025: Mapping Cleaned Reads to the Reference Genome! 
 * note my population is 2022
 * we used clean reads to map to black spruce reference genome using bwa-mem2
+* We will go to the reference genome via: 
+`cd /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome`
 * the reference genome is provided here: 
 `/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics`
 * we modified the mapping.sh script to our specific population samples and saved resulting sequence files (.sam) to the class shared space: 
 `/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/bams`
 * We submitted to the VACC SLURM scheduler using sbatch requesting 10 cpus and 64 GB ram 
 * some nodes would not compute so we had to run a few times until no more failure 
+
 * While it was running we produced process_bam.sh and bam_stats.sh files and combined them in a wrapper (process_stats_wrapper.sh)
+* The bam_stats.sh script generates stats regarding bwa alignment and the output is:
+`~/projects/eco_genomics_2025/population_genomics/myscripts`
+* process_bam.sh will use the program sambamba to manipulate sam/bam files 
+* Sambamba will do several steps, including removing PCR duplicates and index the process file for quick lookup
+* We submitted the wrapped job to SLURM and the output of the wrapped script will be in:
+`~/projects/eco_genomics_2025/population_genomics/myscripts`
 
+* Finally, we visualized the mapping of our reads to the reference via tview which is part of samtools
 
+module load gcc samtools 
 
+samtools tview \
+/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/examples/2030_57_O.sorted.rmdup.bam \
+/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa
 
-* We will go to the reference genome via: 
-`cd /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome`
 
 ### 9/18/2025  Review Bamstats and set up nucleotide diversity estimation using ANGSD
 
@@ -49,7 +61,9 @@ the myscripts folder This was used to trim adapters off red spruce fastq sequenc
 * saw roughly 66% reads mapped in proper pairs 
 * obtained depth of coverage between 2-3x , suggest we need to use a probabilistic framework for analyzing the genotype data
 
-* 
+* We used the program Analysis of Next Generation Sequence Data (ANGSD) to perform genotype likelihood (GL) analysis
+* GL is the probability of observing the sequencing data given the genotype of the individual at that site 
+
 
 9/25/25
 

@@ -361,6 +361,92 @@ display: none;
 <h2>Author: Silas Decker</h2>
 <div id="cleaning-fastq-reads-of-red-spruce" class="section level3">
 <h3>9/11/25: Cleaning FastQ reads of red spruce</h3>
+<ul>
+<li>We wrote a bash script called fastp.sh located within my Github
+Repo:
+<code>~/projects/eco_genomics_2025/population_genomics/myscripts</code></li>
+</ul>
+<p>the myscripts folder This was used to trim adapters off red spruce
+fastq sequence files.</p>
+<ul>
+<li><p>Raw fastq files were located on the class share space:
+<code>/gpsfs1/cl/ecogen/pbio6800/PopulationGenomics/fastq/red_spruce</code></p></li>
+<li><p>Using the program fastp we processed the raw reads and cleaned
+and output the cleaned reads to the following directory on the class
+shared space
+<code>/gpsfs1/cl/ecogen/pbio6800/PopulationGenomics/cleanreads</code></p></li>
+<li><p>Fastp produced html formatted reports for each sample which I
+saved into the directory:</p></li>
+</ul>
+<p><code>~/projects/eco_genomics_2025/population_genomics/myresults/fastp_reports</code></p>
+<ul>
+<li><p>The results showed high quality sequence with most Q-scores
+&gt;&gt;20 and low amount of adaptor contamination. We also trimmed the
+first 12 bp to get rid of barcoded indicies</p></li>
+<li><p>Cleaned reads are now ready to proceed to the next step in our
+pipeline: mapping to the reference genome!</p></li>
+</ul>
+</div>
+<div id="mapping-cleaned-reads-to-the-reference-genome" class="section level3">
+<h3>9/16/2025: Mapping Cleaned Reads to the Reference Genome!</h3>
+<ul>
+<li><p>note my population is 2022</p></li>
+<li><p>we used clean reads to map to black spruce reference genome using
+bwa-mem2</p></li>
+<li><p>We will go to the reference genome via:
+<code>cd /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome</code></p></li>
+<li><p>the reference genome is provided here:
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics</code></p></li>
+<li><p>we modified the mapping.sh script to our specific population
+samples and saved resulting sequence files (.sam) to the class shared
+space:
+<code>/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/bams</code></p></li>
+<li><p>We submitted to the VACC SLURM scheduler using sbatch requesting
+10 cpus and 64 GB ram</p></li>
+<li><p>some nodes would not compute so we had to run a few times until
+no more failure</p></li>
+<li><p>While it was running we produced process_bam.sh and bam_stats.sh
+files and combined them in a wrapper (process_stats_wrapper.sh)</p></li>
+<li><p>The bam_stats.sh script generates stats regarding bwa alignment
+and the output is:
+<code>~/projects/eco_genomics_2025/population_genomics/myscripts</code></p></li>
+<li><p>process_bam.sh will use the program sambamba to manipulate
+sam/bam files</p></li>
+<li><p>Sambamba will do several steps, including removing PCR duplicates
+and index the process file for quick lookup</p></li>
+<li><p>We submitted the wrapped job to SLURM and the output of the
+wrapped script will be in:
+<code>~/projects/eco_genomics_2025/population_genomics/myscripts</code></p></li>
+<li><p>Finally, we visualized the mapping of our reads to the reference
+via tview which is part of samtools</p></li>
+</ul>
+<p>module load gcc samtools</p>
+<p>samtools tview<br />
+/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/examples/2030_57_O.sorted.rmdup.bam<br />
+/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa</p>
+</div>
+<div id="review-bamstats-and-set-up-nucleotide-diversity-estimation-using-angsd" class="section level3">
+<h3>9/18/2025 Review Bamstats and set up nucleotide diversity estimation
+using ANGSD</h3>
+<ul>
+<li><p>Load in 2022.stats.txt into r to view</p></li>
+<li><p>Wrote short script called bam_stats_review.r located in myscripts
+to evaluate the mapping success</p></li>
+<li><p>saw roughly 66% reads mapped in proper pairs</p></li>
+<li><p>obtained depth of coverage between 2-3x , suggest we need to use
+a probabilistic framework for analyzing the genotype data</p></li>
+<li><p>We used the program Analysis of Next Generation Sequence Data
+(ANGSD) to perform genotype likelihood (GL) analysis</p></li>
+<li><p>GL is the probability of observing the sequencing data given the
+genotype of the individual at that site</p></li>
+</ul>
+<p>9/25/25</p>
+<p>We wrote a bash script to compare Fst between our red spruce and
+Wisconsin black spruce, called ANGSD_Fst.sh and the file produced
+results to:
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/Fst</code></p>
+<p>We then wrote a bash script to run PCA and admixture for ALL samples
+called PCAngsd_RSBS.sh</p>
 </div>
 </div>
 </div>

@@ -29,7 +29,7 @@
 
 #---------  End Slurm preamble, job commands now follow
 
-cd ~/projects/eco_genomics_2025/population_genomics/mycripts
+cd ~/projects/eco_genomics_2025/population_genomics/myscripts
 
 bash process_bam.sh
 
