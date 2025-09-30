@@ -54,7 +54,7 @@ cp ${INPUT}/RSBS_bam.list ${OUT}
 # Set value of K and number of PCA eigenvalues (=K-1)
 # K corresponds to the number of distinct ancestry groups you want to cluster genotypes into
 
-K=2
+K=3
 E=$((K-1))
 
 # Then, run PCA and admixture scores with pcangsd:
