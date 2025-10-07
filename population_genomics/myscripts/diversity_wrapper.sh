@@ -34,8 +34,19 @@
 
 cd ~/projects/eco_genomics_2025/population_genomics/myscripts/
 
-bash ANGSD.sh
+bash ANGSD_bads.sh
 
-bash ANGSD_doTheta.sh
+bash ANGSD_min2.sh
+
+bash ANGSD_min4.sh
+
+bash ANGSD_nobad_min2.sh
+
+
+
+
+#bash ANGSD_doTheta.sh
+
+
 
 

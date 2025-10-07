@@ -24,7 +24,7 @@ ls ${INPUT}/${MYPOP}*sorted.rmdup.bam >${OUT}/${MYPOP}_bam.list
 
 # File suffix to distinguish analysis choices, like "All" or "Poly" depending on whether you're analyzing all the sites or just the polymorphic ones
 
-SUFFIX="ALL"
+SUFFIX="ALL_nobad_min2"
 
 
 ###########################################
@@ -36,7 +36,7 @@ angsd -b ${OUT}/${MYPOP}_bam.list \
 -anc ${REF} \
 -out ${OUT}/${MYPOP}_${SUFFIX} \
 -nThreads 10 \
--remove_bads 1 \
+-remove_bads 0 \
 -C 50 \
 -baq 1 \
 -minMapQ 20 \
@@ -45,7 +45,7 @@ angsd -b ${OUT}/${MYPOP}_bam.list \
 -doSaf 1 \
 -doCounts 1 \
 -minInd 4 \
--setMinDepthInd 1 \
+-setMinDepthInd 2 \
 -setMaxDepthInd 40 \
 -setMinDepth 10 \
 -skipTriallelic 1 \

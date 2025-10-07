@@ -24,7 +24,7 @@ ls ${INPUT}/${MYPOP}*sorted.rmdup.bam >${OUT}/${MYPOP}_bam.list
 
 # File suffix to distinguish analysis choices, like "All" or "Poly" depending on whether you're analyzing all the sites or just the polymorphic ones
 
-SUFFIX="ALL"
+SUFFIX="ALL_min4"
 
 
 ###########################################
@@ -45,7 +45,7 @@ angsd -b ${OUT}/${MYPOP}_bam.list \
 -doSaf 1 \
 -doCounts 1 \
 -minInd 4 \
--setMinDepthInd 1 \
+-setMinDepthInd 4 \
 -setMaxDepthInd 40 \
 -setMinDepth 10 \
 -skipTriallelic 1 \
