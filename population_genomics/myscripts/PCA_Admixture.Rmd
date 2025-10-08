@@ -20,7 +20,12 @@ library(ggpubr)
 First Lets estimate PCA!
 
 ```{r}
-COV<-as.matrix(read.table('RSBS_poly_K3.cov'))
+# K=2: RSBS_poly_K2.cov
+# K=3: RSBS_poly_K3.cov
+# K=4: RSBS_poly_K4.cov
+# K=5: RSBS_poly_K5.cov
+
+COV<-as.matrix(read.table('RSBS_poly_K5.cov'))
 PCA<-eigen(COV)
 ```
 How much variance does the first eigenvalue explain 
@@ -66,7 +71,12 @@ ggscatter(data, x = "V2", y = "V3",
 
 What about admixture analysis
 ```{r}
- q <- read.table("/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/PCA_ADMIX/RSBS_poly.admix.2.Q", sep=" ", header=F)
+
+# K=2 : RSBS_poly_K2.admix.2.Q
+# K=3 : RSBS_poly_K3.admix.3.Q
+# K=4  RSBS_poly_K4.admix.4.Q
+# K=5   RSBS_poly_K5.admix.5.Q
+q <- read.table("/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/PCA_ADMIX/RSBS_poly_K5.admix.5.Q", sep=" ", header=F)
 
 K=dim(q)[2] #Find the level of K modeled
 

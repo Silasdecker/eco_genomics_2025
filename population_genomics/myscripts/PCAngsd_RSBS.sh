@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=PCangsd
+#SBATCH --job-name=PCangsd_k5
 
 # Name the output file: Re-direct the log file to your home directory
 # The first part of the name (%x) will be whatever you name your job 
@@ -54,7 +54,7 @@ cp ${INPUT}/RSBS_bam.list ${OUT}
 # Set value of K and number of PCA eigenvalues (=K-1)
 # K corresponds to the number of distinct ancestry groups you want to cluster genotypes into
 
-K=3
+K=5
 E=$((K-1))
 
 # Then, run PCA and admixture scores with pcangsd:
