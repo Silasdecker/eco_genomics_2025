@@ -1,0 +1,35 @@
+mkdir: cannot create directory ‘/users/s/m/smdecker/projects/eco_genomics2025/transcriptomics/myresults/fastp_reports’: No such file or directory
+T1R2_S152_L007_R1_001.fastq.gz T1R2_S152_L007_R2_001.fastq.gz
+T1R2_S152_L007_R1_cleanSD_001.fastq.gz T1R2_S152_L007_R2_cleanSD_001.fastq.gz
+Detecting adapter sequence for read1...
+>I7_Nextera_Transposase_1 | >Trans2_rc | >I7_Nextera_Transposase_1 | >Trans2_rc
+CTGTCTCTTATACACATCTCCGAGCCCACGAGAC
+
+Detecting adapter sequence for read2...
+>I5_Nextera_Transposase_1 | >Trans1_rc | >I5_Nextera_Transposase_1 | >Trans1_rc
+CTGTCTCTTATACACATCTGACGCTGCCGACGA
+
+/var/spool/slurm/d/job1623980/slurm_script: line 29: 580032 Killed                  fastp -i ${READ1} -I ${READ2} -o /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/${NAME1} -O /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/${NAME2} --detect_adapter_for_pe --trim_poly_g --thread 4 --cut_right --cut_window_size 6 --qualified_quality_phred 20 --length_required 35 --html ${MYREPO}/transcriptomics/myresults/fastp_reports/${NAME1}.html
+T1R3_S151_L007_R1_001.fastq.gz T1R3_S151_L007_R2_001.fastq.gz
+T1R3_S151_L007_R1_cleanSD_001.fastq.gz T1R3_S151_L007_R2_cleanSD_001.fastq.gz
+Detecting adapter sequence for read1...
+>I7_Nextera_Transposase_1 | >Trans2_rc | >I7_Nextera_Transposase_1 | >Trans2_rc
+CTGTCTCTTATACACATCTCCGAGCCCACGAGAC
+
+Detecting adapter sequence for read2...
+>I5_Nextera_Transposase_1 | >Trans1_rc | >I5_Nextera_Transposase_1 | >Trans1_rc
+CTGTCTCTTATACACATCTGACGCTGCCGACGA
+
+/var/spool/slurm/d/job1623980/slurm_script: line 29: 580156 Killed                  fastp -i ${READ1} -I ${READ2} -o /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/${NAME1} -O /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/${NAME2} --detect_adapter_for_pe --trim_poly_g --thread 4 --cut_right --cut_window_size 6 --qualified_quality_phred 20 --length_required 35 --html ${MYREPO}/transcriptomics/myresults/fastp_reports/${NAME1}.html
+T1R4_S150_L007_R1_001.fastq.gz T1R4_S150_L007_R2_001.fastq.gz
+T1R4_S150_L007_R1_cleanSD_001.fastq.gz T1R4_S150_L007_R2_cleanSD_001.fastq.gz
+Detecting adapter sequence for read1...
+>I7_Nextera_Transposase_1 | >Trans2_rc | >I7_Nextera_Transposase_1 | >Trans2_rc
+CTGTCTCTTATACACATCTCCGAGCCCACGAGAC
+
+Detecting adapter sequence for read2...
+>I5_Nextera_Transposase_1 | >Trans1_rc | >I5_Nextera_Transposase_1 | >Trans1_rc
+CTGTCTCTTATACACATCTGACGCTGCCGACGA
+
+/var/spool/slurm/d/job1623980/slurm_script: line 29: 580322 Killed                  fastp -i ${READ1} -I ${READ2} -o /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/${NAME1} -O /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/${NAME2} --detect_adapter_for_pe --trim_poly_g --thread 4 --cut_right --cut_window_size 6 --qualified_quality_phred 20 --length_required 35 --html ${MYREPO}/transcriptomics/myresults/fastp_reports/${NAME1}.html
+[2025-10-09T16:48:28.594] error: Detected 3 oom_kill events in StepId=1623980.batch. Some of the step tasks have been OOM Killed.

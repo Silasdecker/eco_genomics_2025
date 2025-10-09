@@ -25,7 +25,7 @@ First Lets estimate PCA!
 # K=4: RSBS_poly_K4.cov
 # K=5: RSBS_poly_K5.cov
 
-COV<-as.matrix(read.table('RSBS_poly_K5.cov'))
+COV<-as.matrix(read.table('RSBS_poly_K4.cov'))
 PCA<-eigen(COV)
 ```
 How much variance does the first eigenvalue explain 
@@ -76,7 +76,7 @@ What about admixture analysis
 # K=3 : RSBS_poly_K3.admix.3.Q
 # K=4  RSBS_poly_K4.admix.4.Q
 # K=5   RSBS_poly_K5.admix.5.Q
-q <- read.table("/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/PCA_ADMIX/RSBS_poly_K5.admix.5.Q", sep=" ", header=F)
+q <- read.table("/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/PCA_ADMIX/RSBS_poly_K4.admix.4.Q", sep=" ", header=F)
 
 K=dim(q)[2] #Find the level of K modeled
 
@@ -88,9 +88,10 @@ ord<-order(pops[,2])
 
 Plot the admixture coefficients 
 ```{r}
+
 barplot(t(q)[,ord],
         #col=cols[1:K],
-        col=c("black","red"),
+        col=c("tomato",'black','red','brown'),
         space=0,border=NA,
         xlab="Populations",ylab="Admixture proportions",
         main=paste0("Red Spruce-Black Spruce Admixture: K=",K))
