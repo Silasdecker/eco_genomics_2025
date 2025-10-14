@@ -21,4 +21,39 @@ We made a script called samlon_quant.sh that lives in:
 
 This script will be run next week. 
 
+# 10/14/25
+We ran salmon_quant.sh at the end of class since it is computationally significant due to their iterative kmer mapping. Results were placed into: 
+`/users/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myresults`
+
+We are using the VACC emulator (under clusters in UVM on demand)
+
+Using regular expressions (grep -r --include \*.log -e 'Mapping rate') we determined the mapping rate was between 36 and 62% which is very low. Causes could be the new method of low RNA input library prep or the fact that these isopods are of a different clade and thus do not map completetly to the reference. Further, contamination from non-copepod critters (algae, bacteria, etc) could results in RNA that would not map to a copepod reference. 
+
+Mapping rate data was sent with the '>' : 
+`grep -r --include \*.log -e 'Mapping rate' > ~/projects/eco_genomics_2025/transcriptomics/myresults/mapping_rate_list.txt`
+
+Or in a classier way via refined reg expressions: 
+
+`grep -r --include \*.log -e 'Mapping rate' > ~/projects/eco_genomics_2025/transcriptomics/myresults/mapping_rate_list.txt`
+
+Broadly we are seeing if the factors of temperature and generation impact the gene expression. 
+
+We created a counts_matrix using an r-script w/ library tximport that lives here: 
+
+`~/projects/eco_genomics_2025/transcriptomics/mydata`
+
+from the script: create_counts_matrix.r: 
+'~/projects/eco_genomics_2025/transcriptomics/myscripts'
+
+This will serve as a resource for PCA. We hypothesized that clusters could appear as a function of temperature, generation, and G1 of the treatment group may be further from controls due to its large difference in upper temperature limit until croakation. Replicates within a group should be close to eachother. Treatment gradation from G1-G4 could be evident. Within the control there may be lab acclimation/adaptation signatures. 
+
+
+# DESeq2 start of data analysis!
+We made an Rmarkdown script called 'DESeq2_tonsa_multigen' that lives in: 
+`~/projects/eco_genomics_2025/transcriptomics/myscripts`
+We copied in metadata.txt to ~/...../mydata and ran the r script
+
+We explored the countsTable (myData) in terms of dimension, histogram of coutns, and other metrics. This all lives in the DESeq2_tonsa_multigen.rmd file 
+
+
 

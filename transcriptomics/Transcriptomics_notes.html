@@ -357,6 +357,69 @@ display: none;
 <p>This is a place to record notes of coding happenings during the
 transcriptomics module</p>
 </div>
+<div id="section" class="section level1">
+<h1>10/07/2025</h1>
+<p>On the first day of transcrtipomics we learned about the motivation
+behind and processes involved in the transciptomics worklow. We
+discussed applications, what questions can be answered, and critical
+steps involved in processing RNA.</p>
+<p>We started to run fastp to clean and visualize data quality in our
+fastq files but encountered some issues with file recognition. To be
+continued…</p>
+</div>
+<div id="section-1" class="section level1">
+<h1>10/09/2025</h1>
+<p>Edited our fastp_tonsa.sh to become fastp_tonsa_take2.sh. This script
+is more fluent in computer speak and lives:
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts</code></p>
+<p>We ran fastp_tonsa_take2 and produced html files to view quality
+reports of our samples.</p>
+<p>We made a script called samlon_quant.sh that lives in:</p>
+<p><code>/users/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts</code></p>
+<p>This script will be run next week.</p>
+</div>
+<div id="section-2" class="section level1">
+<h1>10/14/25</h1>
+<p>We ran salmon_quant.sh at the end of class since it is
+computationally significant due to their iterative kmer mapping. Results
+were placed into:
+<code>/users/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myresults</code></p>
+<p>We are using the VACC emulator (under clusters in UVM on demand)</p>
+<p>Using regular expressions (grep -r –include *.log -e ‘Mapping rate’)
+we determined the mapping rate was between 36 and 62% which is very low.
+Causes could be the new method of low RNA input library prep or the fact
+that these isopods are of a different clade and thus do not map
+completetly to the reference. Further, contamination from non-copepod
+critters (algae, bacteria, etc) could results in RNA that would not map
+to a copepod reference.</p>
+<p>Mapping rate data was sent with the ‘&gt;’ :
+<code>grep -r --include \*.log -e &#39;Mapping rate&#39; &gt; ~/projects/eco_genomics_2025/transcriptomics/myresults/mapping_rate_list.txt</code></p>
+<p>Or in a classier way via refined reg expressions:</p>
+<p><code>grep -r --include \*.log -e &#39;Mapping rate&#39; &gt; ~/projects/eco_genomics_2025/transcriptomics/myresults/mapping_rate_list.txt</code></p>
+<p>Broadly we are seeing if the factors of temperature and generation
+impact the gene expression.</p>
+<p>We created a counts_matrix using an r-script w/ library tximport that
+lives here:</p>
+<p><code>~/projects/eco_genomics_2025/transcriptomics/mydata</code></p>
+<p>from the script: create_counts_matrix.r:
+‘~/projects/eco_genomics_2025/transcriptomics/myscripts’</p>
+<p>This will serve as a resource for PCA. We hypothesized that clusters
+could appear as a function of temperature, generation, and G1 of the
+treatment group may be further from controls due to its large difference
+in upper temperature limit until croakation. Replicates within a group
+should be close to eachother. Treatment gradation from G1-G4 could be
+evident. Within the control there may be lab acclimation/adaptation
+signatures.</p>
+</div>
+<div id="deseq2-start-of-data-analysis" class="section level1">
+<h1>DESeq2 start of data analysis!</h1>
+<p>We made an Rmarkdown script called ‘DESeq2_tonsa_multigen’ that lives
+in: <code>~/projects/eco_genomics_2025/transcriptomics/myscripts</code>
+We copied in metadata.txt to ~/…../mydata and ran the r script</p>
+<p>We explored the countsTable (myData) in terms of dimension, histogram
+of coutns, and other metrics. This all lives in the
+DESeq2_tonsa_multigen.rmd file</p>
+</div>
 
 
 
