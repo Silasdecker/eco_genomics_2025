@@ -60,7 +60,9 @@ We explored the countsTable (myData) in terms of dimension, histogram of coutns,
 I missed class thus nothing happened for me today, except a 12 hour driving mission. Package aquired (great-uncle) from boston and delivered to client (great-aunt) in southern VT. 
 
 # 10/21/2025
-I am making up for class (10/17) and looking at visualizing the coutns matrix in the DESeq2_tonsa_multigen.rmd file 
+I am making up for class (10/17) and looking at visualizing the counts matrix in the DESeq2_tonsa_multigen.rmd file 
+
+Additionally, plenty of code was generated later in this same day during class (heatmaps, euler plots, etc)
 
 We made a heatmap according to the below code: 
 ```{r}
@@ -136,5 +138,8 @@ df <- as.data.frame(colData(dds)[,c("generation","line")])
 pheatmap(mat, annotation_col=df)
 pheatmap(mat, annotation_col=df, cluster_cols = F)
 ```
-We then attempted to make Euler plot but mine is having trouble recognizing G1, G2, G3 
+We then made Euler plots to see how generations share or don't share differentually expressed genes. 
+These plots are pretty neat, albeit tedious. I wonder what is meant by the 13 differential genes shared by all generations. 
+
+
 

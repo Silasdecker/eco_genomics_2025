@@ -185,11 +185,32 @@ resG1_CvT <- results(dds, contrast=c("group","controlG1","treatmentG1"), alpha =
 summary(resG1_CvT)
 ```
 
+
+
+
+
 ```{r}
 # re-order by significance 
 resG1_CvT <- resG1_CvT[order(resG1_CvT$padj),]
 head(resG1_CvT)
 ```
+
+```{r}
+# Counts of specific top interaction gene! (important validatition that the normalization, model is working)
+d <-plotCounts(dds, gene="TRINITY_DN139369_c0_g5_i1", intgroup = (c("line","generation")), returnData=TRUE)
+d
+
+d$generation <- factor(d$generation, levels = sort(unique(d$generation)))
+
+p <- ggplot(d, aes(x = generation, y = count, color = line, group = line)) +
+  theme_minimal() + theme(text = element_text(size=20), panel.grid.major=element_line(colour="grey"))
+p <- p + geom_point(position=position_jitter(w=0.2,h=0), size=3, aes(shape = line)) 
+p <- p + stat_summary(fun = mean, geom = "point", size=5, alpha=0.7) 
+p <- p + stat_summary(fun = mean, geom = "line", size = 1.5, aes(group = line), alpha = 0.8)
+p <- p + scale_color_manual(values = c("control" = "blue", "treatment" = "red"))
+p
+```
+
 ```{r}
 # Counts of specific top interaction gene! (important validatition that the normalization, model is working)
 d <-plotCounts(dds, gene="TRINITY_DN139369_c0_g5_i1", intgroup = (c("line","generation")), returnData=TRUE)
@@ -201,10 +222,44 @@ p <- p + geom_point(position=position_jitter(w=0.2,h=0), size=3)
 p <- p + stat_summary(fun = mean, geom = "point", size=5, alpha=0.7) 
 p
 ```
+
+
 ```{r}
+# Now we can make a MA plot 
+#What is the relationship between Log Fold Change and magnitude of expression 
+
 plotMA(resG1_CvT, ylim=c(-5,5))
 
 ```
+Time to make a volcano plot 
+
+```{r}
+# Make a dataframe
+res_df <- as.data.frame(resG1_CvT)
+
+# Remove NAs
+res_df <- res_df[!is.na(res_df$padj), ]
+
+# Add significance column for color mapping
+res_df$significance <- "Not Sig"
+res_df$significance[res_df$padj < 0.05 & res_df$log2FoldChange > 0] <- "Up"
+res_df$significance[res_df$padj < 0.05 & res_df$log2FoldChange < 0] <- "Down"
+
+ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = significance)) +
+  geom_point(alpha = 0.7, size = 2) +
+  scale_color_manual(values = c("Up" = "red", "Down" = "blue", "Not Sig" = "grey")) +
+  geom_vline(xintercept = c(-1, 1), linetype = "dashed", color = "black") +
+  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "black") +
+  labs(
+    title = "Volcano Plot: Generation 1 (Treatment vs Control)",
+    x = expression(log[2]~Fold~Change),
+    y = expression(-log[10]~Adjusted~p~value)
+  ) +
+  theme_bw(base_size = 16) +
+  theme(legend.title = element_blank())
+```
+
+
 ```{r}
 topgenes <- head(rownames(resG1_CvT),100)
 mat <- assay(vsd)[topgenes,]
@@ -213,6 +268,8 @@ df <- as.data.frame(colData(dds)[,c("generation","line")])
 pheatmap(mat, annotation_col=df)
 pheatmap(mat, annotation_col=df, cluster_cols = F)
 ```
+
+## Lets make plots to show CvTs across generations
 ```{r}
 #Gen1
 resG1_CvT <- results(dds, contrast=c("group","controlG1","treatmentG1"), alpha = 0.05)
@@ -244,6 +301,7 @@ summary(resG3_CvT)
 resG3_CvT <- resG3_CvT[!is.na(resG3_CvT$padj),]
 degs_G3_CvTM <- row.names(resG3_CvT[resG3_CvT$padj < 0.05,])
 ```
+
 ```{r}
 #Gen4
 resG4_CvT <- results(dds, contrast=c("group","controlG4","treatmentG4"), alpha = 0.05)
@@ -254,42 +312,102 @@ summary(resG4_CvT)
 resG4_CvT <- resG4_CvT[!is.na(resG4_CvT$padj),]
 degs_G4_CvTM <- row.names(resG4_CvT[resG4_CvT$padj < 0.05,])
 ```
+
+
 ```{r}
+sig_genes_G1 <- rownames(resG1_CvT[which(resG1_CvT$padj < 0.05 & !is.na(resG1_CvT$padj)), ])
+
+# Combine into a data frame
+lfc_mat <- data.frame(
+  Gen1 = resG1_CvT[sig_genes_G1, "log2FoldChange"],
+  Gen2 = resG2_CvT[sig_genes_G1, "log2FoldChange"],
+  Gen3 = resG3_CvT[sig_genes_G1, "log2FoldChange"],
+  Gen4 = resG4_CvT[sig_genes_G1, "log2FoldChange"]
+)
+
+# Remove any rows with missing values (some genes may not be in all result tables)
+lfc_mat <- na.omit(lfc_mat)
+
+pheatmap(lfc_mat,
+         scale = "row",             # scales each gene’s LFCs across generations
+         color = colorRampPalette(c("blue", "white", "red"))(50),
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean",
+         clustering_method = "complete",
+         show_rownames = FALSE,
+         main = "LFC (Treatment vs Control) of Sig Genes in Gen 1")
+
+
+```
+
+
+
+```{r}
+sig_genes_G2 <- rownames(resG2_CvT[which(resG2_CvT$padj < 0.05 & !is.na(resG1_CvT$padj)), ])
+
+# Combine into a data frame
+lfc_mat2 <- data.frame(
+  Gen1 = resG1_CvT[sig_genes_G2, "log2FoldChange"],
+  Gen2 = resG2_CvT[sig_genes_G2, "log2FoldChange"],
+  Gen3 = resG3_CvT[sig_genes_G2, "log2FoldChange"],
+  Gen4 = resG4_CvT[sig_genes_G2, "log2FoldChange"]
+)
+
+# Remove any rows with missing values (some genes may not be in all result tables)
+lfc_mat2 <- na.omit(lfc_mat)
+
+pheatmap(lfc_mat,
+         scale = "row",             # scales each gene’s LFCs across generations
+         color = colorRampPalette(c("blue", "white", "red"))(50),
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean",
+         clustering_method = "complete",
+         show_rownames = FALSE,
+         main = "LFC (Treatment vs Control) of Sig Genes in Gen 2")
+
+
+```
+
+
+Now its time to make some Euler Plots 
+We can also make Venn Diagrams 
+```{r}
+
 library(eulerr)
 
 # Total
-length(degs_G1_CvTM)  # 
-length(degs_G2_CvTM)  #  
-length(degs_G3_CvTM)  # 
-length(degs_G4_CvTM)  # 
+length(degs_G1_CvTM)  # 573
+length(degs_G2_CvTM)  # 4568
+length(degs_G3_CvTM)  # 1234
+length(degs_G4_CvTM)  # 40
 
 # Intersections
-length(intersect(degs_G1_CvTM,degs_G2_CvTM))  
-length(intersect(degs_G1_CvTM,degs_G3_CvTM)) 
+length(intersect(degs_G1_CvTM,degs_G2_CvTM)) # 227
+length(intersect(degs_G1_CvTM,degs_G3_CvTM)) # 71
 #length(intersect(degs_G1_CvTM,degs_G4_CvTM)) 
 
-length(intersect(degs_G2_CvTM,degs_G3_CvTM))  
+length(intersect(degs_G2_CvTM,degs_G3_CvTM))  # 294
 #length(intersect(degs_G2_CvTM,degs_G4_CvTM))  
 
 #length(intersect(degs_G3_CvTM,degs_G4_CvTM)) 
 
 # To calc number shared in all three contrasts
 int12 <- intersect(degs_G1_CvTM,degs_G2_CvTM)
-length(intersect(degs_G3_CvTM,int12)) 
+length(intersect(degs_G3_CvTM,int12))         # 13 
 
-# Number unique
+# Number unique genes expressed in each generation 
 
- #  OA
- #  OW 
- #  OWA
+573-227-71+13   # G1 288
+4568-227-294+13 #  G2 4060
+1234-71-294+13  #  G3 882 
 
 
-# G1&G2
-# G1&G3
-# G2&G3
+227-13 # G1&G2 214
+71-13  # G1&G3 58
+294-13 # G2&G3 281
 
 # Note that the names are important and have to be specific to line up the diagram
-fit1 <- euler(c("G1" = , "G2" = , "G3" = , "G1&G2" = , "G1&G3" = , "G2&G3" = , "G1&G2&G3" = ))
+fit1 <- euler(c("G1" = 288, "G2" = 4860, "G3" =882 , "G1&G2" = 214, "G1&G3" = 58, "G2&G3" =281 , "G1&G2&G3" =13 ))
 
 
 plot(fit1,  lty = 1:3, quantities = TRUE)
@@ -304,5 +422,8 @@ plot(fit1, quantities = TRUE, fill = "transparent",
  #  total G1
  #  total G2
  #  total G3
+
+
+
 ```
 
