@@ -56,4 +56,85 @@ We copied in metadata.txt to ~/...../mydata and ran the r script
 We explored the countsTable (myData) in terms of dimension, histogram of coutns, and other metrics. This all lives in the DESeq2_tonsa_multigen.rmd file 
 
 
+# 10/17/2025
+I missed class thus nothing happened for me today, except a 12 hour driving mission. Package aquired (great-uncle) from boston and delivered to client (great-aunt) in southern VT. 
+
+# 10/21/2025
+I am making up for class (10/17) and looking at visualizing the coutns matrix in the DESeq2_tonsa_multigen.rmd file 
+
+We made a heatmap according to the below code: 
+```{r}
+#We made a heatmap according to the below code: 
+sampleDists <- dist(t(assay(vsd)))
+
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$line, vsd$generation, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+```
+We looked for outliers and it appears that some outliers do exist (treatment G2) that appear as heat signatures that are distant from the linear line through the middle of the heatmap. 
+
+A more robust way to identify outliers was done by making a cluster tree according to the code below: 
+```{r}
+# Lets make a cluster tree to look for outliers 
+sampleTree <- hclust(dist(sampleDists), method="average")
+# plot
+plot(sampleTree, main="Sample clustering to detect outliers", sub="", xlab="",cex.lab=1.5, cex.axis=1.5, cex.main=2)
+```
+Outliers appear as branches further away from the main clusters.
+The outliers seem to be T3R4 and C2R1. This is a really neat way to identfy diverging data points. 
+
+Now its PCA time! 
+We constructed PCA plots based on the following code: 
+```{r}
+# first transform the data for plotting using variance stabilization
+vsd <- vst(dds, blind=FALSE)
+
+pcaData <- plotPCA(vsd, intgroup=c("line","generation"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData,"percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=line, shape=generation)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+```
+Clusters appear to be dominated based on generation and experimental condition (control vs. treatment)
+
+We enhanced the aesthetics of the PCA via ggplot using the point geom. Code exists in the DESeq2_tonsa_multigen.rmd script. We then made groups in order to test specific contrasts. 
+
+We then made a script to plot individual genes where individual genes from the above step can be inserted in 'XXXXXX' and plotted one by one. 
+```{r}
+# Counts of specific top interaction gene! (important validatition that the normalization, model is working)
+d <-plotCounts(dds, gene="XXXXXXX", intgroup = (c("line","generation")), returnData=TRUE)
+d
+
+p <-ggplot(d, aes(x=line, y=count, color=line, shape=generation)) + 
+  theme_minimal() + theme(text = element_text(size=20), panel.grid.major=element_line(colour="grey"))
+p <- p + geom_point(position=position_jitter(w=0.2,h=0), size=3)
+p <- p + stat_summary(fun = mean, geom = "point", size=5, alpha=0.7) 
+p
+```
+
+We made an MA plot: 
+```{r}
+plotMA(resG1_CvT, ylim=c(-5,5))
+
+```
+To visualize the most abundance genes we made a heatmap of the top 20: 
+
+```{r}
+topgenes <- head(rownames(resG1_CvT),100)
+mat <- assay(vsd)[topgenes,]
+mat <- mat - rowMeans(mat)
+df <- as.data.frame(colData(dds)[,c("generation","line")])
+pheatmap(mat, annotation_col=df)
+pheatmap(mat, annotation_col=df, cluster_cols = F)
+```
+We then attempted to make Euler plot but mine is having trouble recognizing G1, G2, G3 
 

@@ -102,4 +102,207 @@ resultsNames(dds)
 
 
 ```
+```{r}
+# Time to make a PCA plot 
+
+# The goal of transformation "is to remove the dependence of the variance on the mean, particularly the high variance of the logarithm of count data when the mean is low."
+
+# this gives log2(n + 1)
+ntd <- normTransform(dds)
+meanSdPlot(assay(ntd))
+
+# Variance stabilizing transformation
+vsd <- vst(dds, blind=FALSE)
+meanSdPlot(assay(vsd))
+
+
+```
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$line, vsd$generation, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+
+# Note any outliers
+```
+
+```{r}
+# Lets make a cluster tree to look for outliers 
+sampleTree <- hclust(dist(sampleDists), method="average")
+# plot
+plot(sampleTree, main="Sample clustering to detect outliers", sub="", xlab="",cex.lab=1.5, cex.axis=1.5, cex.main=2)
+```
+```{r}
+# Now its PCA time! 
+# first transform the data for plotting using variance stabilization
+vsd <- vst(dds, blind=FALSE)
+
+pcaData <- plotPCA(vsd, intgroup=c("line","generation"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData,"percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=line, shape=generation)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+```
+```{r}
+ggplot(pcaData, aes(PC1, PC2)) +
+  geom_point(size=5, stroke = 1, aes(fill=line, shape=generation, alpha = generation)) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) +
+  scale_shape_manual(values=c(21,22,23,24), labels = c("G1", "G2","G3", "G4"))+
+  #scale_shape_manual(values=c(21,22,23,24) -> circle, square, diamond, triangle
+  scale_fill_manual(values=c('#6699CC',"#CC3333"), labels = c("Control", "Treatment"))+
+  scale_alpha_manual(values = c(1.0, 0.8, 0.7, 0.3), guide = "none") +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(panel.border = element_rect(color = "black", fill = NA, size = 3))+
+  theme(text = element_text(size = 20)) +
+  theme(legend.title = element_blank())
+```
+
+```{r}
+# Making groups to test specific contrasts 
+dds$line <- relevel(dds$line, ref = "control")
+dds$generation <- relevel(dds$generation, ref = "G1")
+
+
+dds$group <- factor(paste0(dds$line, dds$generation))
+design(dds) <- ~ group
+dds <- DESeq(dds)
+resultsNames(dds)
+
+resG1_CvT <- results(dds, contrast=c("group","controlG1","treatmentG1"), alpha = 0.05)
+
+summary(resG1_CvT)
+```
+
+```{r}
+# re-order by significance 
+resG1_CvT <- resG1_CvT[order(resG1_CvT$padj),]
+head(resG1_CvT)
+```
+```{r}
+# Counts of specific top interaction gene! (important validatition that the normalization, model is working)
+d <-plotCounts(dds, gene="TRINITY_DN139369_c0_g5_i1", intgroup = (c("line","generation")), returnData=TRUE)
+d
+
+p <-ggplot(d, aes(x=line, y=count, color=line, shape=generation)) + 
+  theme_minimal() + theme(text = element_text(size=20), panel.grid.major=element_line(colour="grey"))
+p <- p + geom_point(position=position_jitter(w=0.2,h=0), size=3)
+p <- p + stat_summary(fun = mean, geom = "point", size=5, alpha=0.7) 
+p
+```
+```{r}
+plotMA(resG1_CvT, ylim=c(-5,5))
+
+```
+```{r}
+topgenes <- head(rownames(resG1_CvT),100)
+mat <- assay(vsd)[topgenes,]
+mat <- mat - rowMeans(mat)
+df <- as.data.frame(colData(dds)[,c("generation","line")])
+pheatmap(mat, annotation_col=df)
+pheatmap(mat, annotation_col=df, cluster_cols = F)
+```
+```{r}
+#Gen1
+resG1_CvT <- results(dds, contrast=c("group","controlG1","treatmentG1"), alpha = 0.05)
+resG1_CvT <- resG1_CvT[order(resG1_CvT$padj),] #sort
+head(resG1_CvT)
+summary(resG1_CvT)
+
+resG1_CvT <- resG1_CvT[!is.na(resG1_CvT$padj),]
+degs_G1_CvTM <- row.names(resG1_CvT[resG1_CvT$padj < 0.05,])
+```
+
+```{r}
+#Gen2
+resG2_CvT <- results(dds, contrast=c("group","controlG2","treatmentG2"), alpha = 0.05)
+resG2_CvT <- resG2_CvT[order(resG2_CvT$padj),] #sort
+head(resG2_CvT)
+summary(resG2_CvT)
+
+resG2_CvT <- resG2_CvT[!is.na(resG2_CvT$padj),]
+degs_G2_CvTM <- row.names(resG2_CvT[resG2_CvT$padj < 0.05,])
+```
+```{r}
+#Gen3
+resG3_CvT <- results(dds, contrast=c("group","controlG3","treatmentG3"), alpha = 0.05)
+resG3_CvT <- resG3_CvT[order(resG3_CvT$padj),] #sort
+head(resG3_CvT)
+summary(resG3_CvT)
+
+resG3_CvT <- resG3_CvT[!is.na(resG3_CvT$padj),]
+degs_G3_CvTM <- row.names(resG3_CvT[resG3_CvT$padj < 0.05,])
+```
+```{r}
+#Gen4
+resG4_CvT <- results(dds, contrast=c("group","controlG4","treatmentG4"), alpha = 0.05)
+resG4_CvT <- resG4_CvT[order(resG4_CvT$padj),] #sort
+head(resG4_CvT)
+summary(resG4_CvT)
+
+resG4_CvT <- resG4_CvT[!is.na(resG4_CvT$padj),]
+degs_G4_CvTM <- row.names(resG4_CvT[resG4_CvT$padj < 0.05,])
+```
+```{r}
+library(eulerr)
+
+# Total
+length(degs_G1_CvTM)  # 
+length(degs_G2_CvTM)  #  
+length(degs_G3_CvTM)  # 
+length(degs_G4_CvTM)  # 
+
+# Intersections
+length(intersect(degs_G1_CvTM,degs_G2_CvTM))  
+length(intersect(degs_G1_CvTM,degs_G3_CvTM)) 
+#length(intersect(degs_G1_CvTM,degs_G4_CvTM)) 
+
+length(intersect(degs_G2_CvTM,degs_G3_CvTM))  
+#length(intersect(degs_G2_CvTM,degs_G4_CvTM))  
+
+#length(intersect(degs_G3_CvTM,degs_G4_CvTM)) 
+
+# To calc number shared in all three contrasts
+int12 <- intersect(degs_G1_CvTM,degs_G2_CvTM)
+length(intersect(degs_G3_CvTM,int12)) 
+
+# Number unique
+
+ #  OA
+ #  OW 
+ #  OWA
+
+
+# G1&G2
+# G1&G3
+# G2&G3
+
+# Note that the names are important and have to be specific to line up the diagram
+fit1 <- euler(c("G1" = , "G2" = , "G3" = , "G1&G2" = , "G1&G3" = , "G2&G3" = , "G1&G2&G3" = ))
+
+
+plot(fit1,  lty = 1:3, quantities = TRUE)
+# lty changes the lines
+
+plot(fit1, quantities = TRUE, fill = "transparent",
+     lty = 1:3,
+     labels = list(font = 4))
+
+
+#cross check
+ #  total G1
+ #  total G2
+ #  total G3
+```
 
