@@ -141,5 +141,61 @@ pheatmap(mat, annotation_col=df, cluster_cols = F)
 We then made Euler plots to see how generations share or don't share differentually expressed genes. 
 These plots are pretty neat, albeit tedious. I wonder what is meant by the 13 differential genes shared by all generations. 
 
+# 10/23/2025
+We created a markdown file called 'DESeq2toTopGo.Rmd' that lives in:
+`~/projects/eco_genomics_2025/transcriptomics/mydata`
+The overarching goal was to understand GO analysis and perform functional enrichment analyses. 
+
+The first code block pulled in the required libs and the counts_matrix.txt file. NOTE: ensure you are reading in with the correct funtion (read.table for .txt file) for the type of data the counts matrix is. The first code block also created a DESeq object (dds). We then grouped by generation. 
+
+The next code chunk (2) was for viewing the distributions of the DESeq run. 
+
+In code chunk 3 we determined the relations between given metrics (Wald Statistic).
+
+Code chunk 4 was used to make a density plot and a rugplot to see what it is we are testing in a GO analysis. 
+
+Chunk 5 is where the party started. First we had to use ondemand clusters to access "Genes_GO_terms_output.tsv" which lived at: 
+`/gpfs1/cl/ecogen/pbio6800/Transcriptomics/enrichment`
+We then ran TopGO to complete the functional enrichment analysis. 
+
+To see what this all means, we produced GO items in code chunk 6 in order to input GO Ids into Revigo. This allows us to determine the genes which are being enriched, how closely they relate, and produce scatterplots for visualization. 
+
+
+# 10/28/2025
+We started by making a DEPSeq2toWGCNA rmd file that lives:
+`~/projects/eco_genomics_2025/transcriptomics/mydata`
+The scripts being used are very long, so rather than placing in here I refer my future self to the saved scripts for reference. 
+
+The first step was to filter the DESeq2 data (first code block)
+
+We then used the clusters feature on open on demand to secure copy the file 'WGCNA_TraitData.csv' to:
+`~/projects/eco_genomics_2025/transcriptomics/mydata`
+This will help our analyses of the phenotypic outcomes of the DGE. 
+More precisely, do differential genes correlate to organisms phenotypic outcomes (I think this will be upper critical temperature limit data)
+
+Using the 'WGCNA_TraitData.csv' we imported the trait data and filtered it applying to variance. (Code chunk 2)
+
+We then set soft thresholds based on the filtered data (Code chunk 3)
+Interpretting the plot, we want a value greater than 0.8. The degree of connectivity is also important and high values show many genes in few modules, and low means tons of little modues. R-squared above 0.8 with moderate degree of connectivity (not too high not too low). I am choosing 22 for my degree of connectivity. This graph is kinda tough to read. 
+
+Time to build the network! (Code chunk 4) I set my soft power to 22.
+The max block size has to be larger than the items in our data. We filtered 50% of 14,000 genes so max block size > 7,000. 
+This step takes a little time to run. 
+
+We then made code to plot the dendogram of the modules (Code chunk 5).
+My soft power of 22 yielded 18 modules (that was the class average)
+The height of the dendogram is the degree of correlation.
+
+Our next mission was to test for the correlation between eigengene and trait data. (Code chunk 6) Pearson's correlation is used here and p-values are pulled out in the code. This makes a heat map of eigengene and trait map data to visualize degree of correlations. An asterix is placed next to significantly correlated eigengenes.
+
+We then focused on the individual model that contains the most correlation to see which genes were present and to which experimental condition they derived. (Code chunk 7) We ggplotted the highly correleated module of genes by generation and condition to see how things are shifting in the gene expression w.r.t gene expression.This yielded the following GO ids: 
+
+GO:0016746
+GO:0005634
+GO:0000276
+GO:0015078
+GO:0015986
+
+These can be investigated to understand what they do! Insert into Revigo. 
 
 
