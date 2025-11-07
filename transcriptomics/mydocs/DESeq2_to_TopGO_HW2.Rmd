@@ -1,0 +1,483 @@
+---
+title: "DESeq2_to_TopGO_HW2"
+author: "Silas Decker"
+date: "2025-11-06"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir="/users/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/mydata") 
+
+```
+
+### First step is to run DESeq2_to_TopGO.Rmd script to initiate the required variables for downstream processing (dds - the DESeq2 object)
+
+### The focus of this script will be to perform GO-enrichment analyses across all generations 
+
+
+## TopGO for generation 1
+```{r}
+library(topGO)
+library(GO.db)
+
+# Convert to data frame
+res_G1_df <- as.data.frame(resG1_CvT)
+
+# Add geneID column from rownames
+res_G1_df$geneID <- rownames(res_G1_df)
+res_G1_df <- res_G1_df[, c("geneID", setdiff(names(res_G1_df), "geneID"))]
+
+# Read GO terms file (tonsa_go) provided in 
+tonsa_go <- read.delim("Genes_GO_terms_output.tsv", header = TRUE) %>%
+  slice(-c(1,2)) %>%  # remove header rows if present
+  na.omit()  # remove missing GO annotations
+
+# Identify DEGs that have GO annotations
+res_G1_GO <- res_G1_df[res_G1_df$geneID %in% tonsa_go$geneID, ]
+
+# Keep only significant DEGs 
+res_G1_GO_sig <- subset(res_G1_GO, padj < 0.05 & abs(log2FoldChange) > 1)
+
+
+# Merge with GO annotations
+tonsa_stat1 <- merge(res_G1_GO_sig, tonsa_go, by = "geneID")
+
+# Create gene2GO list which is used in the topgo function 
+gene2GO <- tonsa_go %>%
+  filter(!is.na(GO) & GO != "") %>%
+  group_by(geneID) %>%
+  summarise(GO = list(unique(GO)), .groups = "drop") %>%
+  with(setNames(GO, geneID))
+
+# Split semicolon-separated GO terms
+gene2GO <- lapply(gene2GO, function(x) unlist(strsplit(x, ";")))
+
+# Create geneList for TopGO: 1 = DEG, 0 = not DEG
+all_genes <- names(gene2GO)
+geneList1 <- setNames(as.integer(all_genes %in% tonsa_stat1$geneID), all_genes)
+
+#Build TopGO pipeline 
+GOdata1 <- new("topGOdata",
+              description = "G1 DEGs GO enrichment",
+              ontology = "BP",
+              allGenes = geneList1,
+              geneSel = function(x) x == 1,
+              nodeSize = 5,
+              annot = annFUN.gene2GO,
+              gene2GO = gene2GO)
+
+#test for enrichment 
+result1 <- runTest(GOdata1, algorithm = "parentChild", statistic = "fisher")
+
+# Convert results to table
+res_table1 <- GenTable(GOdata1, classicFisher = result1,
+                      topNodes = length(usedGO(GOdata1))) %>%
+  mutate(classicFisher = as.numeric(classicFisher),
+         Annotated = as.numeric(Annotated),
+         Significant = as.numeric(Significant))
+
+#plot!
+
+# Keep GO terms with enough but not too many genes
+filtered_GO_results1 <- res_table1 %>%
+  filter(Annotated >= 5 & Annotated < 500) %>%  # adjust as needed
+  group_by(Term) %>%
+  slice_min(classicFisher, n = 1) %>%  # keep only the most significant per Term
+  ungroup() %>%
+  arrange(classicFisher)
+
+
+TopGO_plot1 <- function(df, title) {
+  df %>%
+    slice_head(n = 30) %>%
+    ggplot(aes(x = -log10(classicFisher),
+               y = reorder(Term, -log10(classicFisher)),
+               size = Significant,
+               color = -log10(classicFisher))) +
+    geom_point(alpha = 0.8) +
+    scale_color_gradientn(
+      colors = c("pink", "orchid", "purple", "purple4"),
+      name = "-log10(p-value)"
+    ) +
+    scale_size_continuous(name = "# Significant Genes") +
+    xlab("-log10-classicFisher") +
+    ylab("Biological Function") +
+    ggtitle(title) +
+    theme_minimal() +
+    theme(plot.margin = margin(10, 100, 10, 10),
+          axis.text.y = element_text(size = 10, hjust = 1)) +
+    coord_cartesian(clip = "off")
+}
+
+# Generate plot
+topGO_plot1 <- TopGO_plot1(filtered_GO_results1, "GO Enrichment for DEGs at Gen1")
+topGO_plot1
+
+
+```
+
+
+## TopGO for generation 2
+```{r}
+library(topGO)
+library(GO.db)
+
+# Convert to data frame
+res_G2_df <- as.data.frame(resG2_CvT)
+
+# Add geneID column from rownames
+res_G2_df$geneID <- rownames(res_G2_df)
+res_G2_df <- res_G2_df[, c("geneID", setdiff(names(res_G2_df), "geneID"))]
+
+# Read GO terms file (tonsa_go) provided in 
+tonsa_go <- read.delim("Genes_GO_terms_output.tsv", header = TRUE) %>%
+  slice(-c(1,2)) %>%  # remove header rows if present
+  na.omit()  # remove missing GO annotations
+
+# Identify DEGs that have GO annotations
+res_G2_GO <- res_G2_df[res_G2_df$geneID %in% tonsa_go$geneID, ]
+
+# Keep only significant DEGs 
+res_G2_GO_sig <- subset(res_G2_GO, padj < 0.05 & abs(log2FoldChange) > 1)
+
+
+# Merge with GO annotations
+tonsa_stat2 <- merge(res_G2_GO_sig, tonsa_go, by = "geneID")
+
+# Create gene2GO list which is used in the topgo function 
+gene2GO <- tonsa_go %>%
+  filter(!is.na(GO) & GO != "") %>%
+  group_by(geneID) %>%
+  summarise(GO = list(unique(GO)), .groups = "drop") %>%
+  with(setNames(GO, geneID))
+
+# Split semicolon-separated GO terms
+gene2GO <- lapply(gene2GO, function(x) unlist(strsplit(x, ";")))
+
+# Create geneList for TopGO: 1 = DEG, 0 = not DEG
+all_genes <- names(gene2GO)
+geneList2 <- setNames(as.integer(all_genes %in% tonsa_stat2$geneID), all_genes)
+
+#Build TopGO pipeline 
+GOdata2 <- new("topGOdata",
+              description = "G2 DEGs GO enrichment",
+              ontology = "BP",
+              allGenes = geneList2,
+              geneSel = function(x) x == 1,
+              nodeSize = 5,
+              annot = annFUN.gene2GO,
+              gene2GO = gene2GO)
+
+#test for enrichment 
+result2 <- runTest(GOdata2, algorithm = "parentChild", statistic = "fisher")
+
+# Convert results to table
+res_table2 <- GenTable(GOdata2, classicFisher = result2,
+                      topNodes = length(usedGO(GOdata2))) %>%
+  mutate(classicFisher = as.numeric(classicFisher),
+         Annotated = as.numeric(Annotated),
+         Significant = as.numeric(Significant))
+
+#plot!
+
+# Keep GO terms with enough but not too many genes
+filtered_GO_results2 <- res_table2 %>%
+  filter(Annotated >= 5 & Annotated < 500) %>%  # adjust as needed
+  group_by(Term) %>%
+  slice_min(classicFisher, n = 1) %>%  # keep only the most significant per Term
+  ungroup() %>%
+  arrange(classicFisher)
+
+
+TopGO_plot2 <- function(df, title) {
+  df %>%
+    slice_head(n = 30) %>%
+    ggplot(aes(x = -log10(classicFisher),
+               y = reorder(Term, -log10(classicFisher)),
+               size = Significant,
+               color = -log10(classicFisher))) +
+    geom_point(alpha = 0.8) +
+    scale_color_gradientn(
+      colors = c("pink", "orchid", "purple", "purple4"),
+      name = "-log10(p-value)"
+    ) +
+    scale_size_continuous(name = "# Significant Genes") +
+    xlab("-log10-classicFisher") +
+    ylab("Biological Function") +
+    ggtitle(title) +
+    theme_minimal() +
+    theme(plot.margin = margin(10, 100, 10, 10),
+          axis.text.y = element_text(size = 10, hjust = 1)) +
+    coord_cartesian(clip = "off")
+}
+
+# Generate plot
+topGO_plot2 <- TopGO_plot2(filtered_GO_results2, "GO Enrichment for DEGs at Gen2")
+topGO_plot2
+
+
+```
+
+## TopGO for generation 3
+```{r}
+library(topGO)
+library(GO.db)
+
+# Convert to data frame
+res_G3_df <- as.data.frame(resG3_CvT)
+
+# Add geneID column from rownames
+res_G3_df$geneID <- rownames(res_G3_df)
+res_G3_df <- res_G3_df[, c("geneID", setdiff(names(res_G3_df), "geneID"))]
+
+# Read GO terms file (tonsa_go) provided in 
+tonsa_go <- read.delim("Genes_GO_terms_output.tsv", header = TRUE) %>%
+  slice(-c(1,2)) %>%  # remove header rows if present
+  na.omit()  # remove missing GO annotations
+
+# Identify DEGs that have GO annotations
+res_G3_GO <- res_G3_df[res_G3_df$geneID %in% tonsa_go$geneID, ]
+
+# Keep only significant DEGs 
+res_G3_GO_sig <- subset(res_G3_GO, padj < 0.05 & abs(log2FoldChange) > 1)
+
+
+# Merge with GO annotations
+tonsa_stat3 <- merge(res_G3_GO_sig, tonsa_go, by = "geneID")
+
+# Create gene2GO list which is used in the topgo function 
+gene2GO <- tonsa_go %>%
+  filter(!is.na(GO) & GO != "") %>%
+  group_by(geneID) %>%
+  summarise(GO = list(unique(GO)), .groups = "drop") %>%
+  with(setNames(GO, geneID))
+
+# Split semicolon-separated GO terms
+gene2GO <- lapply(gene2GO, function(x) unlist(strsplit(x, ";")))
+
+# Create geneList for TopGO: 1 = DEG, 0 = not DEG
+all_genes <- names(gene2GO)
+geneList3 <- setNames(as.integer(all_genes %in% tonsa_stat3$geneID), all_genes)
+
+#Build TopGO pipeline 
+GOdata3 <- new("topGOdata",
+              description = "G3 DEGs GO enrichment",
+              ontology = "BP",
+              allGenes = geneList3,
+              geneSel = function(x) x == 1,
+              nodeSize = 5,
+              annot = annFUN.gene2GO,
+              gene2GO = gene2GO)
+
+#test for enrichment 
+result3 <- runTest(GOdata3, algorithm = "parentChild", statistic = "fisher")
+
+# Convert results to table
+res_table3 <- GenTable(GOdata3, classicFisher = result3,
+                      topNodes = length(usedGO(GOdata))) %>%
+  mutate(classicFisher = as.numeric(classicFisher),
+         Annotated = as.numeric(Annotated),
+         Significant = as.numeric(Significant))
+
+#plot!
+
+# Keep GO terms with enough but not too many genes
+filtered_GO_results3 <- res_table3 %>%
+  filter(Annotated >= 5 & Annotated < 500) %>%  # adjust as needed
+  group_by(Term) %>%
+  slice_min(classicFisher, n = 1) %>%  # keep only the most significant per Term
+  ungroup() %>%
+  arrange(classicFisher)
+
+
+TopGO_plot3 <- function(df, title) {
+  df %>%
+    slice_head(n = 30) %>%
+    ggplot(aes(x = -log10(classicFisher),
+               y = reorder(Term, -log10(classicFisher)),
+               size = Significant,
+               color = -log10(classicFisher))) +
+    geom_point(alpha = 0.8) +
+    scale_color_gradientn(
+      colors = c("pink", "orchid", "purple", "purple4"),
+      name = "-log10(p-value)"
+    ) +
+    scale_size_continuous(name = "# Significant Genes") +
+    xlab("-log10-classicFisher") +
+    ylab("Biological Function") +
+    ggtitle(title) +
+    theme_minimal() +
+    theme(plot.margin = margin(10, 100, 10, 10),
+          axis.text.y = element_text(size = 10, hjust = 1)) +
+    coord_cartesian(clip = "off")
+}
+
+# Generate plot
+topGO_plot3 <- TopGO_plot3(filtered_GO_results3, "GO Enrichment for DEGs at Gen3")
+topGO_plot3
+
+
+```
+
+## TopGO for generation 4 
+```{r}
+library(topGO)
+library(GO.db)
+
+# Convert to data frame
+res_G4_df <- as.data.frame(resG4_CvT)
+
+# Add geneID column from rownames
+res_G4_df$geneID <- rownames(res_G4_df)
+res_G4_df <- res_G4_df[, c("geneID", setdiff(names(res_G4_df), "geneID"))]
+
+# Read GO terms file (tonsa_go) provided in 
+tonsa_go <- read.delim("Genes_GO_terms_output.tsv", header = TRUE) %>%
+  slice(-c(1,2)) %>%  # remove header rows if present
+  na.omit()  # remove missing GO annotations
+
+# Identify DEGs that have GO annotations
+res_G4_GO <- res_G4_df[res_G4_df$geneID %in% tonsa_go$geneID, ]
+
+# Keep only significant DEGs 
+res_G4_GO_sig <- subset(res_G4_GO, padj < 0.05 & abs(log2FoldChange) > 1)
+
+
+# Merge with GO annotations
+tonsa_stat4 <- merge(res_G4_GO_sig, tonsa_go, by = "geneID")
+
+# Create gene2GO list which is used in the topgo function 
+gene2GO <- tonsa_go %>%
+  filter(!is.na(GO) & GO != "") %>%
+  group_by(geneID) %>%
+  summarise(GO = list(unique(GO)), .groups = "drop") %>%
+  with(setNames(GO, geneID))
+
+# Split semicolon-separated GO terms
+gene2GO <- lapply(gene2GO, function(x) unlist(strsplit(x, ";")))
+
+# Create geneList for TopGO: 1 = DEG, 0 = not DEG
+all_genes <- names(gene2GO)
+geneList4 <- setNames(as.integer(all_genes %in% tonsa_stat4$geneID), all_genes)
+
+#Build TopGO pipeline 
+GOdata4 <- new("topGOdata",
+              description = "G4 DEGs GO enrichment",
+              ontology = "BP",
+              allGenes = geneList4,
+              geneSel = function(x) x == 1,
+              nodeSize = 5,
+              annot = annFUN.gene2GO,
+              gene2GO = gene2GO)
+
+#test for enrichment 
+result4 <- runTest(GOdata4, algorithm = "parentChild", statistic = "fisher")
+
+# Convert results to table
+res_table4 <- GenTable(GOdata4, classicFisher = result4,
+                      topNodes = length(usedGO(GOdata4))) %>%
+  mutate(classicFisher = as.numeric(classicFisher),
+         Annotated = as.numeric(Annotated),
+         Significant = as.numeric(Significant))
+
+#plot!
+
+# Keep GO terms with enough but not too many genes
+filtered_GO_results4 <- res_table4 %>%
+  filter(Annotated >= 5 & Annotated < 500) %>%  # adjust as needed
+  group_by(Term) %>%
+  slice_min(classicFisher, n = 1) %>%  # keep only the most significant per Term
+  ungroup() %>%
+  arrange(classicFisher)
+
+
+TopGO_plot4 <- function(df, title) {
+  df %>%
+    slice_head(n = 30) %>%
+    ggplot(aes(x = -log10(classicFisher),
+               y = reorder(Term, -log10(classicFisher)),
+               size = Significant,
+               color = -log10(classicFisher))) +
+    geom_point(alpha = 0.8) +
+    scale_color_gradientn(
+      colors = c("pink", "orchid", "purple", "purple4"),
+      name = "-log10(p-value)"
+    ) +
+    scale_size_continuous(name = "# Significant Genes") +
+    xlab("-log10-classicFisher") +
+    ylab("Biological Function") +
+    ggtitle(title) +
+    theme_minimal() +
+    theme(plot.margin = margin(10, 100, 10, 10),
+          axis.text.y = element_text(size = 10, hjust = 1)) +
+    coord_cartesian(clip = "off")
+}
+
+# Generate plot
+topGO_plot4 <- TopGO_plot4(filtered_GO_results4, "GO Enrichment for DEGs at Gen4")
+topGO_plot4
+
+
+```
+
+## Produce GO IDs to deduce functionality of enriched genes 
+
+### The following code chunks derive from the script DESeq2toTopGo.Rmd modified to produce GO IDs for all generations 
+
+## GO ID list for Gen1
+```{r}
+# Select only the columns REVIGO needs
+revigo_input1 <- filtered_GO_results1[, c("GO.ID", "classicFisher")]
+
+sigRes1 <- revigo_input1[as.numeric(revigo_input1$classicFisher) < 0.05, ]
+
+# Rename columns for clarity
+colnames(sigRes1) <- c("GO.ID", "pValue")
+
+# Save as txt to upload to REVIGO
+write.table(sigRes1, file = "topGOsig_for_REVIGO_Gen1.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+## GO ID list for Gen2
+```{r}
+# Select only the columns REVIGO needs
+revigo_input2 <- filtered_GO_results2[, c("GO.ID", "classicFisher")]
+
+sigRes2 <- revigo_input2[as.numeric(revigo_input2$classicFisher) < 0.05, ]
+
+# Rename columns for clarity
+colnames(sigRes2) <- c("GO.ID", "pValue")
+
+# Save as txt to upload to REVIGO
+write.table(sigRes2, file = "topGOsig_for_REVIGO_Gen2.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+## GO ID list for Gen3
+```{r}
+# Select only the columns REVIGO needs
+revigo_input3 <- filtered_GO_results3[, c("GO.ID", "classicFisher")]
+
+sigRes3 <- revigo_input3[as.numeric(revigo_input3$classicFisher) < 0.05, ]
+
+# Rename columns for clarity
+colnames(sigRes3) <- c("GO.ID", "pValue")
+
+# Save as txt to upload to REVIGO
+write.table(sigRes3, file = "topGOsig_for_REVIGO_Gen3.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+## GO ID list for Gen4
+```{r}
+# Select only the columns REVIGO needs
+revigo_input4 <- filtered_GO_results4[, c("GO.ID", "classicFisher")]
+
+sigRes4 <- revigo_input4[as.numeric(revigo_input4$classicFisher) < 0.05, ]
+
+# Rename columns for clarity
+colnames(sigRes4) <- c("GO.ID", "pValue")
+
+# Save as txt to upload to REVIGO
+write.table(sigRes4, file = "topGOsig_for_REVIGO_Gen4.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```

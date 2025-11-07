@@ -198,4 +198,48 @@ GO:0015986
 
 These can be investigated to understand what they do! Insert into Revigo. 
 
+# Homework Notes 
+
+## General goal
+### Produce visualizations and understand the differential gene enrichment between generations and treatments 
+
+### Pick up post-DESeq2 and run TopGO for each generation (we just did gen2 in class)
+
+### Take the GoIDs from TopGO and input to REViGO 
+
+### Take time to understand the molecular significance of the enriched genes and draw speculative hypotheses 
+
+## Bioinformatics Pipeline: 
+
+### Starting point is running DESeq2toTopGO.Rmd in order to initiate variables required for running GO-enrichment 
+
+### A new markdown script was created to analyze the GO-enrichment for all generations names DESeq2_to_TopGO_HW2.Rmd and it lives in: 
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/mydocs`
+
+### The script serves as a space to run TopGO for each generation (4 code chunks) without overwriting between generations. 
+
+### Each generation is mapped via a bubble plot that reveals the abundance by size of circle
+
+## Yielding GO IDs
+
+### After plotting, the script made in DESeq2toTopGO was used to create a list of GO IDs: 
+
+```{r}
+# Select only the columns REVIGO needs
+revigo_input <- filtered_GO_results[, c("GO.ID", "classicFisher")]
+
+sigRes <- revigo_input[as.numeric(revigo_input$classicFisher) < 0.05, ]
+
+# Rename columns for clarity
+colnames(sigRes) <- c("GO.ID", "pValue")
+
+# Save as txt to upload to REVIGO
+write.table(sigRes, file = "topGOsig_for_REVIGO.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+### This script was replicated and modified 4 times to produce GO IDs for each generation and not write over eachother 
+
+
+
+
 
