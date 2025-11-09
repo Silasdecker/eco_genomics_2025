@@ -481,3 +481,6 @@ colnames(sigRes4) <- c("GO.ID", "pValue")
 # Save as txt to upload to REVIGO
 write.table(sigRes4, file = "topGOsig_for_REVIGO_Gen4.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 ```
+
+
+

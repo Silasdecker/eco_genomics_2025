@@ -201,11 +201,12 @@ These can be investigated to understand what they do! Insert into Revigo.
 # Homework Notes 
 
 ## General goal
-### Produce visualizations and understand the differential gene enrichment between generations and treatments 
+
+### Produce visualizations and understand the differential gene expression enrichment between generations. The DEGs plotted are the contrast between control and treatment. 
 
 ### Pick up post-DESeq2 and run TopGO for each generation (we just did gen2 in class)
 
-### Take the GoIDs from TopGO and input to REViGO 
+### Filter the top 5 most statistically significant GoIDs from TopGO and input to REViGO 
 
 ### Take time to understand the molecular significance of the enriched genes and draw speculative hypotheses 
 
@@ -238,6 +239,17 @@ write.table(sigRes, file = "topGOsig_for_REVIGO.txt", sep = "\t", row.names = FA
 ```
 
 ### This script was replicated and modified 4 times to produce GO IDs for each generation and not write over eachother 
+
+### To reduce complexity and make it possible to analyze biological function behind GO terms, the above dataframes (i.e. sigRes1) were filtered (using the toggle option on top of the column) by lowest p-value.
+
+### In excel the GO ids of the 5 lowest p-values were tabulated to input into REVIGO. 
+
+### REVIGO scatter plots of each generation were made. 
+
+### This concludes the bioinformatics pipeline for Homework 2. 
+
+
+
 
 
 
