@@ -212,14 +212,14 @@ These can be investigated to understand what they do! Insert into Revigo.
 
 ## Bioinformatics Pipeline: 
 
-### Starting point is running DESeq2toTopGO.Rmd in order to initiate variables required for running GO-enrichment 
+### Starting point is running DESeq2toTopGO.Rmd in order to initiate variables required for running GO-enrichment
 
-### A new markdown script was created to analyze the GO-enrichment for all generations names DESeq2_to_TopGO_HW2.Rmd and it lives in: 
+### A new markdown script was created to analyze the GO-enrichment for all generations named DESeq2_to_TopGO_HW2.Rmd and it lives in: 
 `/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/mydocs`
 
 ### The script serves as a space to run TopGO for each generation (4 code chunks) without overwriting between generations. 
 
-### Each generation is mapped via a bubble plot that reveals the abundance by size of circle
+### Each generation is mapped via a bubble plot that reveals the abundance by size of circle (ggplot figure)
 
 ## Yielding GO IDs
 
@@ -240,11 +240,11 @@ write.table(sigRes, file = "topGOsig_for_REVIGO.txt", sep = "\t", row.names = FA
 
 ### This script was replicated and modified 4 times to produce GO IDs for each generation and not write over eachother 
 
-### To reduce complexity and make it possible to analyze biological function behind GO terms, the above dataframes (i.e. sigRes1) were filtered (using the toggle option on top of the column) by lowest p-value.
+### the topGOsig_for_REVIGO.txt files were opened in an R studio editor to paste them into REVIGO 
 
-### In excel the GO ids of the 5 lowest p-values were tabulated to input into REVIGO. 
+### In excel the GO ids of the 5 lowest p-values were tabulated for less complex comparison. The idea of this is to show the most significant overexpressed biological functions for each generation. 
 
-### REVIGO scatter plots of each generation were made. 
+### REVIGO scatter plots of each generation were made and annotated with the top 5 most significant GO Terms. 
 
 ### This concludes the bioinformatics pipeline for Homework 2. 
 

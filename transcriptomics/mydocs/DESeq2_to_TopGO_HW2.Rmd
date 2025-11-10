@@ -482,5 +482,18 @@ colnames(sigRes4) <- c("GO.ID", "pValue")
 write.table(sigRes4, file = "topGOsig_for_REVIGO_Gen4.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 ```
 
+## Make text files for input to revigo 
+```{r}
+# Gen 1 
+revigo_text1<-file.edit('topGOsig_for_REVIGO_Gen1.txt')
+# Gen 2
+revigo_text2<-file.edit('topGOsig_for_REVIGO_Gen2.txt')
+# Gen 3
+revigo_text3<-file.edit('topGOsig_for_REVIGO_Gen3.txt')
+# Gen 4
+revigo_text4<-file.edit('topGOsig_for_REVIGO_Gen4.txt')
+
+
+```
 
 
