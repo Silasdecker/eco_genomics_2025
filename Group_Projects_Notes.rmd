@@ -1,0 +1,58 @@
+---
+title: "Group Project_Notes"
+author: "Silas and Yusuf"
+date: "2025-11-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 11/11/25
+
+### Today we got a shared directory for file management that lives in: 
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
+
+### Our data comes from NCBI SRA: 
+
+### SRR4102063
+### SRR4102065
+
+##Inputting Data 
+
+### We first had to load the sratoolkit module: 
+`module load sratoolkit/3.0.0-y2rspiu`
+### We then configured the VACC ~ SRA relationship:
+```{}
+vdb-config --interactive
+```
+
+### Then we used the prefetch command in terminal: 
+```{}
+prefetch SRR4102063 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR4102065 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+```
+### This now provides SRA files in our folder, we need to make them FASTQ files: 
+
+```
+fasterq-dump SRR4102063 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR4102065 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+```
+### We now are attempting to compress them to .gz files: 
+```
+gzip SRR4102063_1.fastq
+gzip SRR4102063_2.fastq
+
+
+```
+
+
+### look into Fastcat to look into indexs for different tomates in the pool 
+
+```
+fascat --help
+```
+
