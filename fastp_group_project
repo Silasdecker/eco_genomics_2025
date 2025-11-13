@@ -1,0 +1,13 @@
+#!/bin/bash  
+
+# This script will process the fastq files and produce quality assesments 
+
+# Input: fastq.gz files
+
+# Preliminary QC with terminal prompts 
+
+# zcat SRR4102063_1.fastq.gz | head -n 4
+# zcat SRR4102063_2.fastq.gz | head -n 4
+# zcat SRR4102065_1.fastq.gz | head -n 4
+# zcat SRR4102065_2.fastq.gz | head -n 4
+

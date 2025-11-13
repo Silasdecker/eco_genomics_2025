@@ -21,8 +21,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ##Inputting Data 
 
-### We first had to load the sratoolkit module: 
-`module load sratoolkit/3.0.0-y2rspiu`
+### We first had to load the required modules: 
+```
+module load gcc/13.3.0-xp3epyt
+
+module load sratoolkit/3.0.0-y2rspiu
+```
+
 ### We then configured the VACC ~ SRA relationship:
 ```{}
 vdb-config --interactive
@@ -30,7 +35,12 @@ vdb-config --interactive
 
 ### Then we used the prefetch command in terminal: 
 ```{}
+prefetch SRR4102062 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+
 prefetch SRR4102063 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR4102064 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 
 prefetch SRR4102065 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 ```
@@ -48,7 +58,23 @@ gzip SRR4102063_2.fastq
 
 
 ```
+## 11/13/25
 
+### First mission was to succesfully compress our fastq files into gzips via: 
+
+```
+gzip SRR4102063_1.fastq
+gzip SRR4102063_2.fastq
+gzip SRR4102065_1.fastq
+gzip SRR4102065_2.fastq
+
+
+```
+# Barcode Identification 
+
+```
+zcat SRR4102063_1.fastq.gz | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -c | sort -nr | head -50
+```
 
 ### look into Fastcat to look into indexs for different tomates in the pool 
 
