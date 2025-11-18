@@ -1,0 +1,35 @@
+# Scratch are for making script to identify barcodes in the fastq files 
+
+# This code was provided by Mellissa - LLM; a powerful duo 
+
+zcat sample_1.fastq.gz | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -c | sort -nr | head -50
+
+# fill in sample place holder: 
+zcat SRR4102065_1.fastq.gz | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -c | sort -nr | head -50
+
+# sample a smaller section of the file for quick checking 
+
+zcat SRR4102063_1.fastq.gz | head -400 | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -c | sort -nr | head -50
+
+# Check the other end of the reads?
+
+zcat SRR4102063_1.fastq.gz | head -400 | awk 'NR%4==2{print substr($0,94,100)}' | sort | uniq -c | sort -nr | head -50
+
+# Visually look at some of the fastq files: 
+
+zcat SRR4102065_1.fastq.gz | head 
+SRR23936509
+zcat SRR23936509_1.fastq.gz | head
+
+# sample first 100k reads -> count top 10 unique 6-mer prefixes
+zcat SRR4102065_1.fastq.gz | head -400000 \
+  | awk 'NR%4==2{print substr($0,1,6)}' \
+  | sort | uniq -c | sort -nr | head -20
+  
+# Lets try the end 
+zcat SRR4102065_1.fastq.gz | head -400000 \
+  | awk 'NR%4==2{print substr($0,1,12)}' \
+  | sort | uniq -c | sort -nr | head -20
+  
+# This produces seemingly biological data - diverse repeats. The data may be demultiplexed already 
+

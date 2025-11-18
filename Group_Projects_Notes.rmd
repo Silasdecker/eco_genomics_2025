@@ -43,6 +43,10 @@ prefetch SRR4102063 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/S
 prefetch SRR4102064 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 
 prefetch SRR4102065 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+# Try this with new samples - quick check if we can parse reps 
+prefetch SRR23936509 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
 ```
 ### This now provides SRA files in our folder, we need to make them FASTQ files: 
 
@@ -50,11 +54,17 @@ prefetch SRR4102065 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/S
 fasterq-dump SRR4102063 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 
 fasterq-dump SRR4102065 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+# Try with new data for reps 
+fasterq-dump SRR23936509 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 ```
 ### We now are attempting to compress them to .gz files: 
 ```
 gzip SRR4102063_1.fastq
 gzip SRR4102063_2.fastq
+gzip SRR23936509_1.fastq
+gzip SRR23936509_2.fastq
+
 
 
 ```
