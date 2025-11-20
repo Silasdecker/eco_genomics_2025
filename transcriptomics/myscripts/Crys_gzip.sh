@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=gz_fastq
+#SBATCH --job-name=gzip_GP
 
 # Name the output file: Re-direct the log file to your home directory
 # The first part of the name (%x) will be whatever you name your job 
-#SBATCH --output=/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/gzip.out
+#SBATCH --output=/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/Crys_gzip.out
 
 # Which partition to use: options include short (<3 hrs), general (<48 hrs), or week
 #SBATCH --partition=general
@@ -24,23 +24,6 @@
 
 #---------  End Slurm preamble, job commands now follow
 
-cd /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
-
-
-
 OUTDIR="/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData"
 
-
-gzip SRR15057665_1.fastq
-gzip SRR15057665_2.fastq
-gzip SRR15057666_1.fastq
-gzip SRR15057666_2.fastq
-gzip SRR15057667_1.fastq
-gzip SRR15057667_2.fastq
-gzip SRR15057668_1.fastq
-gzip SRR15057668_2.fastq
-gzip SRR15057669_1.fastq
-gzip SRR15057669_2.fastq
-gzip SRR15057670_1.fastq
-gzip SRR15057670_2.fastq
 

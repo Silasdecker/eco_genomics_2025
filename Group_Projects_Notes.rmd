@@ -32,7 +32,7 @@ module load sratoolkit/3.0.0-y2rspiu
 ```{}
 vdb-config --interactive
 ```
-
+### We really got stuck on finding data that was parsed out based on replicates. This took nearly all the in time class for the project. 
 ### Then we used the prefetch command in terminal: 
 ```{}
 prefetch SRR4102062 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
@@ -44,7 +44,6 @@ prefetch SRR4102064 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/S
 
 prefetch SRR4102065 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 
-# Try this with new samples - quick check if we can parse reps 
 prefetch SRR23936509 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 
 ```
@@ -91,4 +90,76 @@ zcat SRR4102063_1.fastq.gz | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -
 ```
 fascat --help
 ```
+# 11/20/2025 
+## Time to get down to business - here on out consists of the actual data we will be using 
+
+### We finally found some data that contained individual SRA for each replicate 
+
+## Samples: 3x hydroponic grown crysanthenum (Crys) and 3x soil grown # SRR15057665	hydroponic 1 
+# SRR15057666	hydroponic 2 
+# SRR15057667	hydroponic 3
+# SRR15057668	soil 1 
+# SRR15057669	soil 2 
+# SRR15057670	soil 3 
+
+## Pulling in SRA Files 
+### A bash script was made 'SRA_pull_GP.sh' to run these simultanesouly and it lives in : 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+```{}
+
+prefetch SRR15057665 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057666 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057667 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057668 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057669 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057670 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+```
+
+## Creating Fastq Files 
+
+```
+fasterq-dump SRR15057665 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057666 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+# Try with new data for reps 
+fasterq-dump SRR15057667 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057668 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057669 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057670 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+```
+## Compressing Fastq to .gz
+
+```
+
+gzip SRR15057665_1.fastq
+gzip SRR15057665_2.fastq
+gzip SRR15057666_1.fastq	
+gzip SRR15057666_2.fastq	 
+gzip SRR15057667_1.fastq
+gzip SRR15057667_2.fastq	
+gzip SRR15057668_1.fastq
+gzip SRR15057668_2.fastq	 
+gzip SRR15057669_1.fastq
+gzip SRR15057669_2.fastq	
+gzip SRR15057670_1.fastq
+gzip SRR15057670_2.fastq
+
+
+```
+### About 10 times the gzip script failed on VACC. I thus spoke with AI for a while to make a succinct looped script to compress fastq files that it tited 'looped_gzip.sh' and lives in:
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
 
