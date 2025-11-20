@@ -163,3 +163,10 @@ gzip SRR15057670_2.fastq
 
 `/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
 
+## Cleaning Data 
+
+## We made a script for running fastp names 'Chrys_fastp_GP.sh' that lives in : 
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
+
+### The quality is above 35 more or less, which is excellent
+STAR, 
