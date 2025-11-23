@@ -169,4 +169,31 @@ gzip SRR15057670_2.fastq
 `/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
 
 ### The quality is above 35 more or less, which is excellent
-STAR, 
+
+## 11/21/25 
+
+## Map reads with genome via STAR
+
+### Today I am attempting to map our cleaned transcriptomic reads to a reference *genome* in hopes that *it maps well
+
+### I am using a *C. seticuspe* reference which is hopefully closely related to the species (not stated) in our paper 
+
+### Reference genome: GCA_019973895.1 
+
+### Downloading the reference is being a pain in the ___. My pc does not have the space to download so I am trying to figure out how to upload to VACC. 
+
+
+## 11/23/25 **Actual** Uploading reference genome 
+
+### Same reference as from 11/21, I purged a lot of files from my computer to make room, the download files followed by scp is much easier
+
+### Made a text file 'genome_transfer_GP.txt' which serves as the scripts to input into the terminal.
+### This script uses scp from local machine (windows powershell) to send the downloaded (GBF for annotations and fna for genome) to the VACC folder for this group project: 
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
+
+### The gbf file then needs to be converted to a gtf file for input to star (code on same script as scp commands - genome_transfer_GP.txt)
+
+
+
+
+

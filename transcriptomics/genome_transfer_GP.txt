@@ -1,0 +1,98 @@
+# File for pulling in reference genome for Chrys
+
+# I have 0 storage on my computer so I need to figure out how to pull in genome via terminal prompts 
+# This appears much trickier than SRA pulling 
+
+# I am gonna attempt scp from my local WSL and push files to the VACC into our group Rawdata files
+
+
+scp "C:\Users\smwde\Downloads\ncbi_dataset\ncbi_dataset\data\GCA_019973895.1\Crys.gbff" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
+
+scp "C:\Users\smwde\Downloads\ncbi_dataset\ncbi_dataset\data\GCA_019973895.1\GCA_019973895.1_Crys.fna" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
+
+# Now need to convert gbf file to gtf for STAR 
+
+# need to do a python work around 
+module load python3.10-anaconda/2023.03-1
+python3 -m pip install --user biopython
+python3 -c "import Bio; print(Bio.__version__)"
+
+# Next make a script for running python (nano)
+nano gbff2gff.py
+
+# This is the script: 
+
+#!/usr/bin/env python3
+from BCBio import GFF
+from Bio import SeqIO
+import sys
+
+gbff_file = sys.argv[1]
+gff_file = sys.argv[2]
+
+with open(gff_file, "w") as out_handle:
+    GFF.write(SeqIO.parse(gbff_file, "genbank"), out_handle)
+
+# Then run this: 
+chmod +x gbff2gff.py
+
+python3 gbff2gff.py Crys.gbff Crys.gff
+
+
+# Now we can convert to gtf
+gffread Crys.gff -T -o Crys.gtf
+
+
+#Actually no we can't there are a bunch more workaround. This sucks. 
+
+mkdir -p ~/local/bin
+cd ~/local/bin
+git clone https://github.com/gpertea/gffread.git
+cd gffread
+make 
+export PATH=$HOME/local/bin/gffread:$PATH
+
+# Now to prep for STAR 
+
+# check for read length
+SRR15057670_2.fastq.gz
+zcat SRR15057670_2.fastq.gz | head -n 4
+
+# Make star index
+mkdir -p STARindex
+mkdir -p /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STARindex
+
+# PSYCHE need to download STAR first
+
+# cd to local bin then:
+wget https://github.com/alexdobin/STAR/archive/refs/tags/2.7.10a.tar.gz
+
+
+tar -xzvf 2.7.10a.tar.gz
+cd STAR-2.7.10a/source
+# make STAR
+make STAR
+export PATH=$HOME/local/bin/STAR-2.7.10a/source:$PATH
+
+
+cd /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+# Make exon GTF from CDS
+awk '$3=="CDS" {$3="exon"}1' Crys.gtf > Crys_exon.gtf
+
+# Build STAR index
+mkdir -p /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STARindex
+
+# Nothing is working, try with fna file now 
+STAR --runThreadN 16 \
+     --runMode genomeGenerate \
+     --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STARindex \
+     --genomeFastaFiles GCA_019973895.1_Crys.fna
+# I am now gonna try to run an sbatch script to build the star index
+
+# This will allow for quick mapping of my actual data
+# the script 'star_genome.sh' will make a folder called STARindex where the file will write to
+
+
+
+
