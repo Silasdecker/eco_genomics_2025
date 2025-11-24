@@ -194,6 +194,23 @@ gzip SRR15057670_2.fastq
 ### The gbf file then needs to be converted to a gtf file for input to star (code on same script as scp commands - genome_transfer_GP.txt)
 
 
+## 11/24/25
+
+### It appears that one of the STAR mapping runs didn't work well
+### Two of the 6 files mapped produced 0 byte bam files
+
+### I now realize I mapped both cleaned and raw fastq, so overwriting certainly happened. 
+
+### I am now making a folder in RawData for clean reads, and will rerun STAR mapping for only clean reads. Please, Please work on 6/6 bash gods
+
+### I am making the same script as mapped yesterday, but will be using only clean fastqs which are stored in a new place: 
+`cd /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean`
+
+### New mapping script: STAR_mapping_clean.sh lives in : 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+### Wow, this is really stressful. I think I have to re-index STAR since apparently the hours spent running that yesterday didn't work
 
 
 
