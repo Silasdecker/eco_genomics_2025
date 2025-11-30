@@ -1,0 +1,16 @@
+	STAR --runThreadN 16 --runMode genomeGenerate --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys --genomeFastaFiles /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/CSE_r1.0.fa --sjdbGTFfile /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/CSE.gtf --sjdbOverhang 149 --limitGenomeGenerateRAM 250000000000
+	STAR version: 2.7.10a   compiled: 2025-11-23T14:56:41-05:00 node251.cluster:/gpfs1/home/s/m/smdecker/local/bin/STAR-2.7.10a/source
+Nov 30 13:51:14 ..... started STAR run
+Nov 30 13:51:14 ... starting to generate Genome files
+Nov 30 13:53:03 ..... processing annotations GTF
+Nov 30 13:56:41 ... starting to sort Suffix Array. This may take a long time...
+Nov 30 14:02:02 ... sorting Suffix Array chunks and saving them to disk...
+Nov 30 14:22:02 ... loading chunks from disk, packing SA...
+Nov 30 14:27:32 ... finished generating suffix array
+Nov 30 14:27:32 ... generating Suffix Array index
+Nov 30 14:30:35 ... completed Suffix Array index
+Nov 30 14:30:47 ..... inserting junctions into the genome indices
+Nov 30 14:36:45 ... writing Genome to disk ...
+Nov 30 14:37:29 ... writing Suffix Array to disk ...
+Nov 30 14:37:33 ... writing SAindex to disk
+Nov 30 14:37:37 ..... finished successfully

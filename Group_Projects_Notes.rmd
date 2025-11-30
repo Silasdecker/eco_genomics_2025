@@ -14,10 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Today we got a shared directory for file management that lives in: 
 `/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
 
-### Our data comes from NCBI SRA: 
-
-### SRR4102063
-### SRR4102065
 
 ##Inputting Data 
 
@@ -33,6 +29,7 @@ module load sratoolkit/3.0.0-y2rspiu
 vdb-config --interactive
 ```
 ### We really got stuck on finding data that was parsed out based on replicates. This took nearly all the in time class for the project. 
+
 ### Then we used the prefetch command in terminal: 
 ```{}
 prefetch SRR4102062 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
@@ -90,19 +87,32 @@ zcat SRR4102063_1.fastq.gz | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -
 ```
 fascat --help
 ```
-# 11/20/2025 
-## Time to get down to business - here on out consists of the actual data we will be using 
+## 11/20/2025 
+
+### Time to get down to business - here on out consists of the actual data we will be using 
+
+## Overview of Data
+
+### The data consist of 6 samples of Crysanthenum flowers - 3x soil grown abd 3x hydroponic grown 
+
+### Our gameplan involves running transcriptomic analyses (fastp, STAR mapping to reference genome, deseq2, and then REVIO for biological insight)
+
+### Broadly we wish to see how the growth conditions (soil v no soil) impact the gene activity of the plants 
+
 
 ### We finally found some data that contained individual SRA for each replicate 
 
-## Samples: 3x hydroponic grown crysanthenum (Crys) and 3x soil grown # SRR15057665	hydroponic 1 
-# SRR15057666	hydroponic 2 
-# SRR15057667	hydroponic 3
-# SRR15057668	soil 1 
-# SRR15057669	soil 2 
-# SRR15057670	soil 3 
+## Samples:
+
+### SRR15057665	hydroponic 1 
+### SRR15057666	hydroponic 2 
+### SRR15057667	hydroponic 3
+### SRR15057668	soil 1 
+### SRR15057669	soil 2 
+### SRR15057670	soil 3 
 
 ## Pulling in SRA Files 
+
 ### A bash script was made 'SRA_pull_GP.sh' to run these simultanesouly and it lives in : 
 
 `/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
@@ -165,7 +175,8 @@ gzip SRR15057670_2.fastq
 
 ## Cleaning Data 
 
-## We made a script for running fastp names 'Chrys_fastp_GP.sh' that lives in : 
+### We made a script for running fastp names 'Chrys_fastp_GP.sh' that lives in : 
+
 `/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
 
 ### The quality is above 35 more or less, which is excellent
@@ -174,7 +185,7 @@ gzip SRR15057670_2.fastq
 
 ## Map reads with genome via STAR
 
-### Today I am attempting to map our cleaned transcriptomic reads to a reference *genome* in hopes that *it maps well
+### Today I am attempting to map our cleaned transcriptomic reads to a reference *genome* in hopes that it maps well
 
 ### I am using a *C. seticuspe* reference which is hopefully closely related to the species (not stated) in our paper 
 
@@ -188,7 +199,9 @@ gzip SRR15057670_2.fastq
 ### Same reference as from 11/21, I purged a lot of files from my computer to make room, the download files followed by scp is much easier
 
 ### Made a text file 'genome_transfer_GP.txt' which serves as the scripts to input into the terminal.
+
 ### This script uses scp from local machine (windows powershell) to send the downloaded (GBF for annotations and fna for genome) to the VACC folder for this group project: 
+
 `/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
 
 ### The gbf file then needs to be converted to a gtf file for input to star (code on same script as scp commands - genome_transfer_GP.txt)
@@ -197,6 +210,7 @@ gzip SRR15057670_2.fastq
 ## 11/24/25
 
 ### It appears that one of the STAR mapping runs didn't work well
+
 ### Two of the 6 files mapped produced 0 byte bam files
 
 ### I now realize I mapped both cleaned and raw fastq, so overwriting certainly happened. 
@@ -204,6 +218,7 @@ gzip SRR15057670_2.fastq
 ### I am now making a folder in RawData for clean reads, and will rerun STAR mapping for only clean reads. Please, Please work on 6/6 bash gods
 
 ### I am making the same script as mapped yesterday, but will be using only clean fastqs which are stored in a new place: 
+
 `cd /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean`
 
 ### New mapping script: STAR_mapping_clean.sh lives in : 
@@ -212,5 +227,157 @@ gzip SRR15057670_2.fastq
 
 ### Wow, this is really stressful. I think I have to re-index STAR since apparently the hours spent running that yesterday didn't work
 
+
+## 11/29/2025
+
+### It appears mapping finally worked!!! 
+
+### Note that it was not possible to convert gbff to gtf so that is still an issue that I need to somehow figure out
+
+### To check mapping: 
+
+```
+# lets check one sample 
+ls -lh /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData | grep SRR15057665
+
+
+cat SRR15057665_Log.final.out
+
+
+```
+### Lets hope the rest of samples worked: 
+
+```
+ls -lh /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData | grep Aligned.sortedByCoord
+
+```
+## Mapping Results
+
+### SRR15057665 mapped pretty well (~60%) the other were poor; between 30 and 40%
+
+### We need to push on though 
+
+### There have not been feature counts generated since the feature counts module is not on VACC - but it does have subread 
+
+```
+module load subread/2.0.8
+
+```
+
+### Use Crys.gff to run feature_counts.sh that lives: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+
+## 11/30/2025
+
+## New Database same reference, Plant Garden 
+
+### Download fa.gz (FASTA) and gff.gz (annotation) and scp from local machine to VACC: 
+
+
+```
+scp "C:\Users\smwde\Downloads\CSE_r1.0.fa.gz" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
+
+scp "C:\Users\smwde\Downloads\CSE_r1.1_maker.gff.gz" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
+
+```
+### Files in , time to unzip 
+
+```
+
+gunzip CSE_r1.0.fa.gz
+gunzip CSE_r1.1_maker.gff.gz
+
+```
+### Make directory for new STAR index
+
+```
+mkdir star_index_chrys
+
+# Then lets index this puppy
+
+# VACC does not seem to like STAR, simple module load commands aren't working I think we need github pull 
+
+# But first a sanity check:
+
+head -n 20 CSE_r1.0.fa
+head -n 20 CSE_r1.1_maker.gff
+
+
+```
+
+### Chat gpt is a saint. Gorgeous gff > gtf script: 
+
+```
+
+awk '
+$3 == "gene" {
+    split($9, a, ";"); id=a[1]; gsub("ID=", "", id);
+    print $1 "\tmaker\tgene\t" $4 "\t" $5 "\t.\t" $7 "\t.\tgene_id \"" id "\";"
+}
+$3 == "exon" {
+    split($9, a, ";"); id=a[1]; parent=a[2];
+    gsub("ID=", "", id); gsub("Parent=", "", parent);
+    print $1 "\tmaker\texon\t" $4 "\t" $5 "\t.\t" $7 "\t.\tgene_id \"" parent "\"; transcript_id \"" parent "\";"
+}
+$3 == "CDS" {
+    split($9, a, ";"); id=a[1]; parent=a[2];
+    gsub("ID=", "", id); gsub("Parent=", "", parent);
+    print $1 "\tmaker\tCDS\t" $4 "\t" $5 "\t.\t" $7 "\t" $8 "\tgene_id \"" parent "\"; transcript_id \"" parent "\";"
+}
+' CSE_r1.1_maker.gff > CSE.gtf
+
+# Sanity Check 
+
+head -n 20 CSE.gtf
+
+```
+
+## STAR Indexing 
+
+### Lets build that index (for the nth time)
+
+### New script **STAR_index_new.sh** that lives in: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+### The indexing dumped files into: 
+
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys`
+
+## Mapping
+
+### Indexing appears succesful time to map for the millionth time 
+
+### Map cleaned fastq files to indexed reference genome 
+
+### Chat gpt aided loop for mapping all at once
+
+### NOTE: the species are not a match so this could be hairy but time is not a friend 
+
+### New mapping script named STAR_mapping_new.sh that lives in: 
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts
+
+
+### Mapping completed! One exclamation point until QC check of mapping...
+
+### Check mapping rate: 
+
+```
+less SRR15057665_Log.final.out
+# 63% uniquely mapped
+less SRR15057666_Log.final.out
+# 37% uniquely mapped
+less SRR15057667_Log.final.out
+# 33.9% uniquely mapped 
+less SRR15057668_Log.final.out
+# 33% uniquely mapped 
+less SRR15057669_Log.final.out
+# 47% unqiuely mapped 
+less SRR15057670_Log.final.out
+# 49.7% uniquely mapped 
+```
+### Pretty crummy mapping, but this is using a different cultivar of chrysanthenum so proceed we shall! 
 
 

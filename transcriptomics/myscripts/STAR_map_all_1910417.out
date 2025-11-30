@@ -1,0 +1,54 @@
+Mapping sample SRR15057665...
+	STAR --runThreadN 16 --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys --readFilesIn /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057665_1_clean.fastq.gz /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057665_2_clean.fastq.gz --readFilesCommand zcat --outFileNamePrefix /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STAR_mapping_results/SRR15057665_ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts
+	STAR version: 2.7.10a   compiled: 2025-11-23T14:56:41-05:00 node251.cluster:/gpfs1/home/s/m/smdecker/local/bin/STAR-2.7.10a/source
+Nov 30 14:59:39 ..... started STAR run
+Nov 30 14:59:39 ..... loading genome
+Nov 30 15:00:37 ..... started mapping
+Nov 30 15:13:33 ..... finished mapping
+Nov 30 15:13:43 ..... started sorting BAM
+Nov 30 15:14:05 ..... finished successfully
+Mapping sample SRR15057666...
+	STAR --runThreadN 16 --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys --readFilesIn /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057666_1_clean.fastq.gz /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057666_2_clean.fastq.gz --readFilesCommand zcat --outFileNamePrefix /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STAR_mapping_results/SRR15057666_ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts
+	STAR version: 2.7.10a   compiled: 2025-11-23T14:56:41-05:00 node251.cluster:/gpfs1/home/s/m/smdecker/local/bin/STAR-2.7.10a/source
+Nov 30 15:14:05 ..... started STAR run
+Nov 30 15:14:05 ..... loading genome
+Nov 30 15:15:09 ..... started mapping
+Nov 30 15:30:47 ..... finished mapping
+Nov 30 15:30:59 ..... started sorting BAM
+Nov 30 15:31:11 ..... finished successfully
+Mapping sample SRR15057667...
+	STAR --runThreadN 16 --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys --readFilesIn /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057667_1_clean.fastq.gz /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057667_2_clean.fastq.gz --readFilesCommand zcat --outFileNamePrefix /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STAR_mapping_results/SRR15057667_ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts
+	STAR version: 2.7.10a   compiled: 2025-11-23T14:56:41-05:00 node251.cluster:/gpfs1/home/s/m/smdecker/local/bin/STAR-2.7.10a/source
+Nov 30 15:31:11 ..... started STAR run
+Nov 30 15:31:11 ..... loading genome
+Nov 30 15:32:05 ..... started mapping
+Nov 30 15:49:53 ..... finished mapping
+Nov 30 15:50:02 ..... started sorting BAM
+Nov 30 15:50:13 ..... finished successfully
+Mapping sample SRR15057668...
+	STAR --runThreadN 16 --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys --readFilesIn /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057668_1_clean.fastq.gz /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057668_2_clean.fastq.gz --readFilesCommand zcat --outFileNamePrefix /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STAR_mapping_results/SRR15057668_ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts
+	STAR version: 2.7.10a   compiled: 2025-11-23T14:56:41-05:00 node251.cluster:/gpfs1/home/s/m/smdecker/local/bin/STAR-2.7.10a/source
+Nov 30 15:50:13 ..... started STAR run
+Nov 30 15:50:13 ..... loading genome
+Nov 30 15:51:21 ..... started mapping
+Nov 30 16:09:56 ..... finished mapping
+Nov 30 16:10:08 ..... started sorting BAM
+Nov 30 16:10:20 ..... finished successfully
+Mapping sample SRR15057669...
+	STAR --runThreadN 16 --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys --readFilesIn /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057669_1_clean.fastq.gz /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057669_2_clean.fastq.gz --readFilesCommand zcat --outFileNamePrefix /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STAR_mapping_results/SRR15057669_ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts
+	STAR version: 2.7.10a   compiled: 2025-11-23T14:56:41-05:00 node251.cluster:/gpfs1/home/s/m/smdecker/local/bin/STAR-2.7.10a/source
+Nov 30 16:10:20 ..... started STAR run
+Nov 30 16:10:20 ..... loading genome
+Nov 30 16:11:24 ..... started mapping
+Nov 30 16:26:15 ..... finished mapping
+Nov 30 16:26:26 ..... started sorting BAM
+Nov 30 16:26:40 ..... finished successfully
+Mapping sample SRR15057670...
+	STAR --runThreadN 16 --genomeDir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys --readFilesIn /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057670_1_clean.fastq.gz /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean/SRR15057670_2_clean.fastq.gz --readFilesCommand zcat --outFileNamePrefix /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/STAR_mapping_results/SRR15057670_ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts
+	STAR version: 2.7.10a   compiled: 2025-11-23T14:56:41-05:00 node251.cluster:/gpfs1/home/s/m/smdecker/local/bin/STAR-2.7.10a/source
+Nov 30 16:26:40 ..... started STAR run
+Nov 30 16:26:40 ..... loading genome
+Nov 30 16:27:52 ..... started mapping
+Nov 30 16:41:49 ..... finished mapping
+Nov 30 16:42:02 ..... started sorting BAM
+Nov 30 16:42:16 ..... finished successfully
