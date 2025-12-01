@@ -357,7 +357,7 @@ head -n 20 CSE.gtf
 ### NOTE: the species are not a match so this could be hairy but time is not a friend 
 
 ### New mapping script named STAR_mapping_new.sh that lives in: 
-`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
 
 
 ### Mapping completed! One exclamation point until QC check of mapping...
@@ -380,4 +380,10 @@ less SRR15057670_Log.final.out
 ```
 ### Pretty crummy mapping, but this is using a different cultivar of chrysanthenum so proceed we shall! 
 
+## Create counts matrix 
 
+### Made a script called STAR_counts_matrix.sh that lives in: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+### This produced a tsv counts matrix ready for deseq2 - tomorrows mission I am zonked out 
