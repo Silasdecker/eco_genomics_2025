@@ -9,6 +9,21 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Libraries 
+```{r}
+library(DESeq2)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(ggpubr)
+library(vsn)  
+library("pheatmap")
+library("vsn")
+```
+
+
+
 ## Make metadata - coldata df for DESeq2
 ```{r}
 coldata<-data.frame(
@@ -38,16 +53,6 @@ counts <- read.table("STAR_counts_matrix_clean.tsv",
                      sep = "\t",
                      row.names = 1)
 
-# Use your coldata
-coldata <- data.frame(
-  row.names = c(
-    'SRR15057665','SRR15057666','SRR15057667',
-    'SRR15057668','SRR15057669','SRR15057670'
-  ),
-  condition = c('hydro','hydro','hydro','soil','soil','soil'),
-  replicate = c('1','2','3','1','2','3')
-)
-
 # Make sure names match
 stopifnot(all(colnames(counts) == rownames(coldata)))
 
@@ -60,6 +65,156 @@ dds <- DESeq(dds)
 
 res <- results(dds)
 
+resultsNames(dds)
+
+dim(dds)
+
+# How many transcripts have 15+ counts in 2/3 samples
+# a lot: 21,534
+ddsQC1 <- dds[rowSums(counts(dds) >= 15) >= 4,]
+nrow(ddsQC1)
+
 write.csv(as.data.frame(res), "DESeq2_results.csv")
 
+#check that our data is sane 
+#all(colnames(counts) == rownames(coldata))
 ```
+
+# Transform to remove dependence of variance on the mean 
+```{r}
+# this gives log2(n + 1)
+ntd <- normTransform(dds)
+meanSdPlot(assay(ntd))
+
+# Variance stabilizing transformation - vsd is variance stablized dist
+vsd <- vst(dds, blind=FALSE)
+meanSdPlot(assay(vsd))
+
+```
+
+
+
+## Heatmap of dissimilarity of samples
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$line, vsd$generation, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+```
+
+
+
+## PCA 
+
+```{r}
+# first transform the data for plotting using variance stabilization
+vsd <- vst(dds, blind=FALSE)
+
+pcaData <- plotPCA(vsd, intgroup=c("condition","replicate"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData,"percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=condition, shape=replicate)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+```
+### Prettier PCA
+```{r}
+
+# Variance stabilizing transform for PCA
+vsd <- vst(dds, blind = FALSE)
+
+# Extract PCA data
+pcaData <- plotPCA(vsd, intgroup = c("condition", "replicate"), returnData = TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+# PCA plot for your experiment
+ggplot(pcaData, aes(PC1, PC2)) +
+  geom_point(aes(color = condition, shape = replicate), size = 4, stroke = 1) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  theme_bw() +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 2),
+    text = element_text(size = 18)
+  ) +
+  scale_color_manual(values = c("hydro" = "#6699CC", "soil" = "#CC3333"))
+
+
+```
+
+### SRR15057665	hydroponic 1 
+### SRR15057666	hydroponic 2 
+### SRR15057667	hydroponic 3
+### SRR15057668	soil 1 
+### SRR15057669	soil 2 
+### SRR15057670	soil 3 
+
+
+## Making Groups - Maybe I think we mainly care about condition (SvH) 
+
+```{r}
+
+
+```
+
+## Visualization 
+
+### How do I find top DE genes?
+
+```{r}
+# res is the results from dds
+
+# order by largest adjusted p-value
+res_ordered <- res[order(res$padj), ]
+
+head(res_ordered, 20)
+
+```
+
+
+## Plot Individual Genes 
+
+
+```{r}
+
+# hmm this does not seem to plot, but holy cow does it show DE of this gene 
+d <-plotCounts(dds, gene="Cse_sc000001.1_g220.1", intgroup = (c("condition","replicate")), returnData=TRUE)
+d
+
+
+```
+
+### Most up-regulated genes
+
+```{r}
+# first clean out NAs
+
+res_clean <- res[!is.na(res$padj), ]
+res_sorted <- res_clean[order(res_clean$padj), ]
+
+head(res_sorted, 10)
+```
+
+## MA plot 
+```{r}
+plotMA(res_sorted, ylim=c(-9,7))
+```
+
+
+
+## Volcano Plot 
+```{r}
+
+
+
+```
+

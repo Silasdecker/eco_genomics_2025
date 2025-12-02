@@ -392,7 +392,7 @@ less SRR15057670_Log.final.out
 
 ```
 head STAR_counts_matrix_with_header.tsv
-
+head STAR_counts_matrix_clean.tsv
 
 ```
 ## DESEQ2
@@ -404,6 +404,20 @@ tail -n +6 STAR_counts_matrix_with_header.tsv > STAR_counts_matrix_clean.tsv
 
 
 ```
+### This removed the gene ID header -- too much we need that
+
+```{r}
+# Remove only the 4 summary rows, keep header
+awk 'NR==1 || $1 !~ /^N_(unmapped|multimapping|noFeature|ambiguous)/' \
+    STAR_counts_matrix_with_header.tsv \
+    > STAR_counts_matrix_clean.tsv
+
+```
+
+### Send the proper counts w/ gene ID to:
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/mydata`
+
 ### Need to add a metadata csv to accompany the counts matrix 
 
 ### Make coldata dataframe 
@@ -416,10 +430,20 @@ coldata<-data.frame(
 )
 ```
 
-### Run Deseq2 - made a new .Rmd file to run DESeq2 called DESEQ2_Chrys_soil_v_hydro that lives in: 
+### Run Deseq2 - made a new .Rmd file to run DESeq2 called DESEQ2_Chrys_soil_v_hydro.Rmd that lives in: 
 
 `/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
 
+
+## 12/2/2025
+
+### DESeq2 ran! 
+
+### I made PCAs that are essentially the same, different format 
+
+### The PCA and downstream analysis exists in the same script as DESeq2: DESEQ2_Chrys_soil_v_hydro.Rmd that lives: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
 
 
 
