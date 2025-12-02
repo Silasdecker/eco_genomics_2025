@@ -240,38 +240,3 @@ ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = significance)) 
 
 ```
 
-
-```{r}
-topgenes <- head(rownames(res_sorted),20)
-mat <- assay(vsd)[topgenes,]
-mat <- mat - rowMeans(mat)
-df <- as.data.frame(colData(dds)[,c("condition","replicate")])
-pheatmap(mat, annotation_col=df)
-pheatmap(mat, annotation_col=df, cluster_cols = F)
-```
-
-```{r}
-top20<-head(res_sorted,21)
-
-top10_gene_ids <- rownames(head(res_sorted, 10))
-
-head(top20, 21)
-```
-
-```{r}
-head(topgenes,20)
-```
-
-## Explore Top DE Genes
-
-
-```{r}
-topgenes30 <- head(rownames(res_sorted),30)
-mat <- assay(vsd)[topgenes30,]
-mat <- mat - rowMeans(mat)
-df <- as.data.frame(colData(dds)[,c("condition","replicate")])
-pheatmap(mat, annotation_col=df)
-pheatmap(mat, annotation_col=df, cluster_cols = F)
-```
-
-

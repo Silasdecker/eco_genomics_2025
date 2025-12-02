@@ -1,0 +1,65 @@
+---
+title: "Chrys_GO_analysis"
+author: "Silas and Yusuf"
+date: "2025-12-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Lets load up the libraries
+
+library(DESeq2)
+library(dplyr)
+library(tibble)
+library(topGO)
+library(GO.db)
+library(ggplot2)
+library(scales) 
+library(ggplot2)
+library(ggpubr)
+
+```
+
+```{r}
+
+# Convert results to data frame and clean
+res_df <- as.data.frame(res_sorted)
+res_df <- res_df[!is.na(res_df$padj), ]
+
+# Calculate and add -log10(padj)
+res_df$negLog10Padj <- -log10(res_df$padj)
+```
+
+
+
+```{r}
+ggplot(res_df, aes(x = negLog10Padj)) +
+  geom_density(fill = "lightblue", color = "blue", alpha = 0.5, linewidth = 1) + xlim(c(0,5)) +
+  geom_rug(sides = "b", color = "gray30", alpha = 0.5) +
+  geom_vline(xintercept = -log10(0.05), linetype = "dashed", color = "red") +
+  theme_minimal(base_size = 8) +
+  xlab(expression(-log[10](padj))) +
+  ylab("Density") +
+  ggtitle(expression("Density of " * -log[10](padj)))
+```
+
+```{r}
+head(res_clean)
+rownames<- c('SRR15057665','SRR15057666','SRR15057667','SRR15057668','SRR15057669','SRR15057670')
+res_sorted$geneID <- rownames(res_sorted)
+
+head(res_sorted,10)
+
+```
+
+
+### SRR15057665	hydroponic 1 
+### SRR15057666	hydroponic 2 
+### SRR15057667	hydroponic 3
+### SRR15057668	soil 1 
+### SRR15057669	soil 2 
+### SRR15057670	soil 3 
