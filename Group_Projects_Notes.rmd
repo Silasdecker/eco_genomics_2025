@@ -416,40 +416,10 @@ coldata<-data.frame(
 )
 ```
 
-### Run Deseq2
+### Run Deseq2 - made a new .Rmd file to run DESeq2 called DESEQ2_Chrys_soil_v_hydro that lives in: 
 
-```{r}
-library(DESeq2)
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
 
-# Load counts
-counts <- read.table("STAR_counts_matrix_clean.tsv",
-                     header = TRUE,
-                     sep = "\t",
-                     row.names = 1)
 
-# Use your coldata
-coldata <- data.frame(
-  row.names = c(
-    'SRR15057665','SRR15057666','SRR15057667',
-    'SRR15057668','SRR15057669','SRR15057670'
-  ),
-  condition = c('hydro','hydro','hydro','soil','soil','soil'),
-  replicate = c('1','2','3','1','2','3')
-)
 
-# Make sure names match
-stopifnot(all(colnames(counts) == rownames(coldata)))
-
-# Build DESeq2 object
-dds <- DESeqDataSetFromMatrix(countData = counts,
-                              colData = coldata,
-                              design = ~ condition)
-
-dds <- DESeq(dds)
-
-res <- results(dds)
-
-write.csv(as.data.frame(res), "DESeq2_results.csv")
-
-```
 
