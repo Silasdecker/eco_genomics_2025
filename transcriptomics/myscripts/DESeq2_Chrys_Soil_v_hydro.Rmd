@@ -100,13 +100,31 @@ sampleDists <- dist(t(assay(vsd)))
 
 library("RColorBrewer")
 sampleDistMatrix <- as.matrix(sampleDists)
-rownames(sampleDistMatrix) <- paste(vsd$line, vsd$generation, sep="-")
+rownames(sampleDistMatrix) <- paste(vsd$condition, vsd$replicate, sep="-")
 colnames(sampleDistMatrix) <- NULL
 colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
 pheatmap(sampleDistMatrix,
          clustering_distance_rows=sampleDists,
          clustering_distance_cols=sampleDists,
          col=colors)
+```
+```{r}
+library(pheatmap)
+sampleDists <- dist(t(assay(vsd)))
+pheatmap(as.matrix(sampleDists), clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists)
+
+```
+```{r}
+library(pheatmap)
+
+top_genes <- head(order(res$padj, na.last=NA), 50)
+mat <- assay(vsd)[top_genes, ]
+mat <- mat - rowMeans(mat)
+
+pheatmap(mat, show_rownames=FALSE,
+         annotation_col=coldata)
+
 ```
 
 

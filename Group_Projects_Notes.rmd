@@ -17,8 +17,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ##Inputting Data 
 
-### We first had to load the required modules: 
-```
+### We first had to load the required modules:
+
+```{}
 module load gcc/13.3.0-xp3epyt
 
 module load sratoolkit/3.0.0-y2rspiu
@@ -46,7 +47,7 @@ prefetch SRR23936509 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/
 ```
 ### This now provides SRA files in our folder, we need to make them FASTQ files: 
 
-```
+```{}
 fasterq-dump SRR4102063 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 
 fasterq-dump SRR4102065 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
@@ -55,7 +56,7 @@ fasterq-dump SRR4102065 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupPr
 fasterq-dump SRR23936509 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 ```
 ### We now are attempting to compress them to .gz files: 
-```
+```{}
 gzip SRR4102063_1.fastq
 gzip SRR4102063_2.fastq
 gzip SRR23936509_1.fastq
@@ -68,7 +69,7 @@ gzip SRR23936509_2.fastq
 
 ### First mission was to succesfully compress our fastq files into gzips via: 
 
-```
+```{}
 gzip SRR4102063_1.fastq
 gzip SRR4102063_2.fastq
 gzip SRR4102065_1.fastq
@@ -78,13 +79,13 @@ gzip SRR4102065_2.fastq
 ```
 # Barcode Identification 
 
-```
+```{}
 zcat SRR4102063_1.fastq.gz | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -c | sort -nr | head -50
 ```
 
 ### look into Fastcat to look into indexs for different tomates in the pool 
 
-```
+```{}
 fascat --help
 ```
 ## 11/20/2025 
@@ -135,7 +136,7 @@ prefetch SRR15057670 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/
 
 ## Creating Fastq Files 
 
-```
+```{}
 fasterq-dump SRR15057665 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
 
 fasterq-dump SRR15057666 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
@@ -152,7 +153,7 @@ fasterq-dump SRR15057670 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupP
 ```
 ## Compressing Fastq to .gz
 
-```
+```{}
 
 gzip SRR15057665_1.fastq
 gzip SRR15057665_2.fastq
@@ -236,7 +237,7 @@ gzip SRR15057670_2.fastq
 
 ### To check mapping: 
 
-```
+```{}
 # lets check one sample 
 ls -lh /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData | grep SRR15057665
 
@@ -247,7 +248,7 @@ cat SRR15057665_Log.final.out
 ```
 ### Lets hope the rest of samples worked: 
 
-```
+```{}
 ls -lh /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData | grep Aligned.sortedByCoord
 
 ```
@@ -259,7 +260,7 @@ ls -lh /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData | grep Align
 
 ### There have not been feature counts generated since the feature counts module is not on VACC - but it does have subread 
 
-```
+```{}
 module load subread/2.0.8
 
 ```
@@ -276,7 +277,7 @@ module load subread/2.0.8
 ### Download fa.gz (FASTA) and gff.gz (annotation) and scp from local machine to VACC: 
 
 
-```
+```{}
 scp "C:\Users\smwde\Downloads\CSE_r1.0.fa.gz" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
 
 scp "C:\Users\smwde\Downloads\CSE_r1.1_maker.gff.gz" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
@@ -284,7 +285,7 @@ scp "C:\Users\smwde\Downloads\CSE_r1.1_maker.gff.gz" smdecker@login.vacc.uvm.edu
 ```
 ### Files in , time to unzip 
 
-```
+```{}
 
 gunzip CSE_r1.0.fa.gz
 gunzip CSE_r1.1_maker.gff.gz
@@ -292,14 +293,16 @@ gunzip CSE_r1.1_maker.gff.gz
 ```
 ### Make directory for new STAR index
 
-```
+```{}
 mkdir star_index_chrys
+```
 
 # Then lets index this puppy
 
 # VACC does not seem to like STAR, simple module load commands aren't working I think we need github pull 
 
 # But first a sanity check:
+```{}
 
 head -n 20 CSE_r1.0.fa
 head -n 20 CSE_r1.1_maker.gff
@@ -309,7 +312,7 @@ head -n 20 CSE_r1.1_maker.gff
 
 ### Chat gpt is a saint. Gorgeous gff > gtf script: 
 
-```
+```{}
 
 awk '
 $3 == "gene" {
@@ -327,9 +330,11 @@ $3 == "CDS" {
     print $1 "\tmaker\tCDS\t" $4 "\t" $5 "\t.\t" $7 "\t" $8 "\tgene_id \"" parent "\"; transcript_id \"" parent "\";"
 }
 ' CSE_r1.1_maker.gff > CSE.gtf
+```
 
 # Sanity Check 
 
+```{}
 head -n 20 CSE.gtf
 
 ```
@@ -364,7 +369,7 @@ head -n 20 CSE.gtf
 
 ### Check mapping rate: 
 
-```
+```{}
 less SRR15057665_Log.final.out
 # 63% uniquely mapped
 less SRR15057666_Log.final.out
@@ -378,7 +383,8 @@ less SRR15057669_Log.final.out
 less SRR15057670_Log.final.out
 # 49.7% uniquely mapped 
 ```
-### Pretty crummy mapping, but this is using a different cultivar of chrysanthenum so proceed we shall! 
+
+### Pretty crummy mapping, but this is using a different species of chrysanthenum so proceed we shall! 
 
 ## Create counts matrix 
 
