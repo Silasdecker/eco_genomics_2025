@@ -80,7 +80,30 @@ write.csv(as.data.frame(res), "DESeq2_results.csv")
 #all(colnames(counts) == rownames(coldata))
 ```
 
-# Transform to remove dependence of variance on the mean 
+## Quick characterization of data - need to clean these up 
+```{r}
+
+# Let's see how many reads we have from each sample
+colSums(counts)
+mean(colSums(counts))
+
+barplot(colSums(counts), names.arg=colnames(counts),cex.names=0.5, las=3,ylim=c(0,21000000)) #change dims
+barplot
+abline(h=mean(colSums(counts)), col="blue", lwd=2)
+
+# the average number of counts per gene
+rowSums(counts)
+mean(rowSums(countsTableRound)) # 
+median(rowSums(countsTableRound)) #
+
+apply(countsTableRound,2,mean) # 2 in the apply function does the action across columns
+apply(countsTableRound,1,mean) # 1 in the apply function does the action across rows
+hist(apply(counts,1,mean),xlim=c(0,10000), ylim=c(0,60000),breaks=10000)
+```
+
+
+
+## Transform to remove dependence of variance on the mean 
 ```{r}
 # this gives log2(n + 1)
 ntd <- normTransform(dds)
