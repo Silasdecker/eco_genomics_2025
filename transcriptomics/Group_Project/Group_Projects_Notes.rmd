@@ -1,0 +1,455 @@
+---
+title: "Group Project_Notes"
+author: "Silas and Yusuf"
+date: "2025-11-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 11/11/25
+
+### Today we got a shared directory for file management that lives in: 
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
+
+
+##Inputting Data 
+
+### We first had to load the required modules:
+
+```{}
+module load gcc/13.3.0-xp3epyt
+
+module load sratoolkit/3.0.0-y2rspiu
+```
+
+### We then configured the VACC ~ SRA relationship:
+```{}
+vdb-config --interactive
+```
+### We really got stuck on finding data that was parsed out based on replicates. This took nearly all the in time class for the project. 
+
+### Then we used the prefetch command in terminal: 
+```{}
+prefetch SRR4102062 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+
+prefetch SRR4102063 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR4102064 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR4102065 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR23936509 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+```
+### This now provides SRA files in our folder, we need to make them FASTQ files: 
+
+```{}
+fasterq-dump SRR4102063 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR4102065 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+# Try with new data for reps 
+fasterq-dump SRR23936509 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+```
+### We now are attempting to compress them to .gz files: 
+```{}
+gzip SRR4102063_1.fastq
+gzip SRR4102063_2.fastq
+gzip SRR23936509_1.fastq
+gzip SRR23936509_2.fastq
+
+
+
+```
+## 11/13/25
+
+### First mission was to succesfully compress our fastq files into gzips via: 
+
+```{}
+gzip SRR4102063_1.fastq
+gzip SRR4102063_2.fastq
+gzip SRR4102065_1.fastq
+gzip SRR4102065_2.fastq
+
+
+```
+# Barcode Identification 
+
+```{}
+zcat SRR4102063_1.fastq.gz | awk 'NR%4==2{print substr($0,1,6)}' | sort | uniq -c | sort -nr | head -50
+```
+
+### look into Fastcat to look into indexs for different tomates in the pool 
+
+```{}
+fascat --help
+```
+## 11/20/2025 
+
+### Time to get down to business - here on out consists of the actual data we will be using 
+
+## Overview of Data
+
+### The data consist of 6 samples of Crysanthenum flowers - 3x soil grown abd 3x hydroponic grown 
+
+### Our gameplan involves running transcriptomic analyses (fastp, STAR mapping to reference genome, deseq2, and then REVIO for biological insight)
+
+### Broadly we wish to see how the growth conditions (soil v no soil) impact the gene activity of the plants 
+
+
+### We finally found some data that contained individual SRA for each replicate 
+
+## Samples:
+
+### SRR15057665	hydroponic 1 
+### SRR15057666	hydroponic 2 
+### SRR15057667	hydroponic 3
+### SRR15057668	soil 1 
+### SRR15057669	soil 2 
+### SRR15057670	soil 3 
+
+## Pulling in SRA Files 
+
+### A bash script was made 'SRA_pull_GP.sh' to run these simultanesouly and it lives in : 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+```{}
+
+prefetch SRR15057665 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057666 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057667 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057668 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057669 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+prefetch SRR15057670 --output-directory /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+```
+
+## Creating Fastq Files 
+
+```{}
+fasterq-dump SRR15057665 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057666 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+# Try with new data for reps 
+fasterq-dump SRR15057667 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057668 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057669 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+fasterq-dump SRR15057670 --split-files --outdir /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData
+
+```
+## Compressing Fastq to .gz
+
+```{}
+
+gzip SRR15057665_1.fastq
+gzip SRR15057665_2.fastq
+gzip SRR15057666_1.fastq	
+gzip SRR15057666_2.fastq	 
+gzip SRR15057667_1.fastq
+gzip SRR15057667_2.fastq	
+gzip SRR15057668_1.fastq
+gzip SRR15057668_2.fastq	 
+gzip SRR15057669_1.fastq
+gzip SRR15057669_2.fastq	
+gzip SRR15057670_1.fastq
+gzip SRR15057670_2.fastq
+
+
+```
+### About 10 times the gzip script failed on VACC. I thus spoke with AI for a while to make a succinct looped script to compress fastq files that it tited 'looped_gzip.sh' and lives in:
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+## Cleaning Data 
+
+### We made a script for running fastp names 'Chrys_fastp_GP.sh' that lives in : 
+
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
+
+### The quality is above 35 more or less, which is excellent
+
+## 11/21/25 
+
+## Map reads with genome via STAR
+
+### Today I am attempting to map our cleaned transcriptomic reads to a reference *genome* in hopes that it maps well
+
+### I am using a *C. seticuspe* reference which is hopefully closely related to the species (not stated) in our paper 
+
+### Reference genome: GCA_019973895.1 
+
+### Downloading the reference is being a pain in the ___. My pc does not have the space to download so I am trying to figure out how to upload to VACC. 
+
+
+## 11/23/25 **Actual** Uploading reference genome 
+
+### Same reference as from 11/21, I purged a lot of files from my computer to make room, the download files followed by scp is much easier
+
+### Made a text file 'genome_transfer_GP.txt' which serves as the scripts to input into the terminal.
+
+### This script uses scp from local machine (windows powershell) to send the downloaded (GBF for annotations and fna for genome) to the VACC folder for this group project: 
+
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData`
+
+### The gbf file then needs to be converted to a gtf file for input to star (code on same script as scp commands - genome_transfer_GP.txt)
+
+
+## 11/24/25
+
+### It appears that one of the STAR mapping runs didn't work well
+
+### Two of the 6 files mapped produced 0 byte bam files
+
+### I now realize I mapped both cleaned and raw fastq, so overwriting certainly happened. 
+
+### I am now making a folder in RawData for clean reads, and will rerun STAR mapping for only clean reads. Please, Please work on 6/6 bash gods
+
+### I am making the same script as mapped yesterday, but will be using only clean fastqs which are stored in a new place: 
+
+`cd /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/fastp_clean`
+
+### New mapping script: STAR_mapping_clean.sh lives in : 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+### Wow, this is really stressful. I think I have to re-index STAR since apparently the hours spent running that yesterday didn't work
+
+
+## 11/29/2025
+
+### It appears mapping finally worked!!! 
+
+### Note that it was not possible to convert gbff to gtf so that is still an issue that I need to somehow figure out
+
+### To check mapping: 
+
+```{}
+# lets check one sample 
+ls -lh /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData | grep SRR15057665
+
+
+cat SRR15057665_Log.final.out
+
+
+```
+### Lets hope the rest of samples worked: 
+
+```{}
+ls -lh /gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData | grep Aligned.sortedByCoord
+
+```
+## Mapping Results
+
+### SRR15057665 mapped pretty well (~60%) the other were poor; between 30 and 40%
+
+### We need to push on though 
+
+### There have not been feature counts generated since the feature counts module is not on VACC - but it does have subread 
+
+```{}
+module load subread/2.0.8
+
+```
+
+### Use Crys.gff to run feature_counts.sh that lives: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+
+## 11/30/2025
+
+## New Database same reference, Plant Garden 
+
+### Download fa.gz (FASTA) and gff.gz (annotation) and scp from local machine to VACC: 
+
+
+```{}
+scp "C:\Users\smwde\Downloads\CSE_r1.0.fa.gz" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
+
+scp "C:\Users\smwde\Downloads\CSE_r1.1_maker.gff.gz" smdecker@login.vacc.uvm.edu:/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/RawData/
+
+```
+### Files in , time to unzip 
+
+```{}
+
+gunzip CSE_r1.0.fa.gz
+gunzip CSE_r1.1_maker.gff.gz
+
+```
+### Make directory for new STAR index
+
+```{}
+mkdir star_index_chrys
+```
+
+# Then lets index this puppy
+
+# VACC does not seem to like STAR, simple module load commands aren't working I think we need github pull 
+
+# But first a sanity check:
+```{}
+
+head -n 20 CSE_r1.0.fa
+head -n 20 CSE_r1.1_maker.gff
+
+
+```
+
+### Chat gpt is a saint. Gorgeous gff > gtf script: 
+
+```{}
+
+awk '
+$3 == "gene" {
+    split($9, a, ";"); id=a[1]; gsub("ID=", "", id);
+    print $1 "\tmaker\tgene\t" $4 "\t" $5 "\t.\t" $7 "\t.\tgene_id \"" id "\";"
+}
+$3 == "exon" {
+    split($9, a, ";"); id=a[1]; parent=a[2];
+    gsub("ID=", "", id); gsub("Parent=", "", parent);
+    print $1 "\tmaker\texon\t" $4 "\t" $5 "\t.\t" $7 "\t.\tgene_id \"" parent "\"; transcript_id \"" parent "\";"
+}
+$3 == "CDS" {
+    split($9, a, ";"); id=a[1]; parent=a[2];
+    gsub("ID=", "", id); gsub("Parent=", "", parent);
+    print $1 "\tmaker\tCDS\t" $4 "\t" $5 "\t.\t" $7 "\t" $8 "\tgene_id \"" parent "\"; transcript_id \"" parent "\";"
+}
+' CSE_r1.1_maker.gff > CSE.gtf
+```
+
+# Sanity Check 
+
+```{}
+head -n 20 CSE.gtf
+
+```
+
+## STAR Indexing 
+
+### Lets build that index (for the nth time)
+
+### New script **STAR_index_new.sh** that lives in: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+### The indexing dumped files into: 
+
+`/gpfs1/cl/ecogen/pbio6800/GroupProjects/SpicyTomates/star_index_chrys`
+
+## Mapping
+
+### Indexing appears succesful time to map for the millionth time 
+
+### Map cleaned fastq files to indexed reference genome 
+
+### Chat gpt aided loop for mapping all at once
+
+### NOTE: the species are not a match so this could be hairy but time is not a friend 
+
+### New mapping script named STAR_mapping_new.sh that lives in: 
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+
+### Mapping completed! One exclamation point until QC check of mapping...
+
+### Check mapping rate: 
+
+```{}
+less SRR15057665_Log.final.out
+# 63% uniquely mapped
+less SRR15057666_Log.final.out
+# 37% uniquely mapped
+less SRR15057667_Log.final.out
+# 33.9% uniquely mapped 
+less SRR15057668_Log.final.out
+# 33% uniquely mapped 
+less SRR15057669_Log.final.out
+# 47% unqiuely mapped 
+less SRR15057670_Log.final.out
+# 49.7% uniquely mapped 
+```
+
+### Pretty crummy mapping, but this is using a different species of chrysanthenum so proceed we shall! 
+
+## Create counts matrix 
+
+### Made a script called STAR_counts_matrix.sh that lives in: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+### This produced a tsv counts matrix ready for deseq2 - tomorrows mission I am zonked out 
+
+### QC check on counts matrix
+
+```
+head STAR_counts_matrix_with_header.tsv
+head STAR_counts_matrix_clean.tsv
+
+```
+## DESEQ2
+
+### Remove the first few rows that contain summary information to enable this to enter deseq2
+
+```
+tail -n +6 STAR_counts_matrix_with_header.tsv > STAR_counts_matrix_clean.tsv
+
+
+```
+### This removed the gene ID header -- too much we need that
+
+```{r}
+# Remove only the 4 summary rows, keep header
+awk 'NR==1 || $1 !~ /^N_(unmapped|multimapping|noFeature|ambiguous)/' \
+    STAR_counts_matrix_with_header.tsv \
+    > STAR_counts_matrix_clean.tsv
+
+```
+
+### Send the proper counts w/ gene ID to:
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/mydata`
+
+### Need to add a metadata csv to accompany the counts matrix 
+
+### Make coldata dataframe 
+
+```{r}
+coldata<-data.frame(
+  row.names = c('SRR15057665','SRR15057666','SRR15057667','SRR15057668','SRR15057669','SRR15057670'),
+  condition = c('hydro','hydro','hydro','soil','soil','soil'),
+  replicate = c('1','2','3','1','2','3')
+)
+```
+
+### Run Deseq2 - made a new .Rmd file to run DESeq2 called DESEQ2_Chrys_soil_v_hydro.Rmd that lives in: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+
+## 12/2/2025
+
+### DESeq2 ran! 
+
+### I made PCAs that are essentially the same, different format 
+
+### The PCA and downstream analysis exists in the same script as DESeq2: DESEQ2_Chrys_soil_v_hydro.Rmd that lives: 
+
+`/gpfs1/home/s/m/smdecker/projects/eco_genomics_2025/transcriptomics/myscripts`
+
+
+
